@@ -20,11 +20,8 @@ class BaseApiController extends AbstractController
 
     public function __construct(
         protected Security $security,
-        protected TranslatorInterface $translator,
+        protected TranslatorInterface $translator
     ) {
-        global $language;
-
-        $this->translator->setLocale($language);
     }
 
     protected function response(

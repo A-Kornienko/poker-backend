@@ -38,7 +38,6 @@ return (new PhpCsFixer\Config())
         'fopen_flag_order'                        => true,
         'function_declaration'                    => ['closure_fn_spacing' => 'none'],
         'general_phpdoc_annotation_remove'        => ['annotations' => ['author']],
-        // 'global_namespace_import'                 => true,
         'list_syntax'                             => true,
         'logical_operators'                       => true,
         'mb_str_functions'                        => true,

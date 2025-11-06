@@ -1,9 +1,9 @@
 ## Install Poker app
-1. Create folder for your project, folder name should be `poker2`.
-2. Run `git clone git@github.com:A-Kornienko/poker-back.git` into directory `poker2`.
-3. Go out of the directory `poker2`
+1. Create folder for your project, folder name should be `poker`.
+2. Run `git clone git@github.com:A-Kornienko/poker-back.git` into directory `poker`.
+3. Go out of the directory `poker`
 4. Install laradock from this manual https://laradock.io/getting-started/ use setup for multiple projects configuration.
-5. Directory `laradock` should be located near the `poker2`, on the same level.
+5. Directory `laradock` should be located near the `poker`, on the same level.
 6. Update `MYSQL_VERSION=8.0` in `laradock/.env`.
 7. Update `PHP_VERSION=8.2` in `laradock/.env`.
 8. Only for `Mac with M1` processor, make sure that this settings is added `APACHE_FOR_MAC_M1=true` in `laradock/.env`.
@@ -11,11 +11,10 @@
 9. Wait for build with default configuration for apache2 and mysql.
 10. Copy `.env.dist` to `.env`.
 11. Create local database `poker`.
-12. Run `composer install` inside the `poker2` directory or inside the container.
+12. Run `composer install` inside the `poker` directory or inside the container.
 13. Run migrations `php bin/console doctrine:migrations:migrate`.
-14. Copy `public/engine/mini_example.php` to `public/engine/mini.php` it's a stub for core classes.
-15. Run `php bin/console importmap:install`.
-16. Copy `assets` to directory `public`.
+14. Run `php bin/console importmap:install`.
+15. Run `php bin/console lexik:jwt:generate-keypair`
 
 ### Troubleshootings: 
 1. You can add some domain name to hosts:

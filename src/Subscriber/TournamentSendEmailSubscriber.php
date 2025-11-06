@@ -2,7 +2,6 @@
 
 namespace App\Subscriber;
 
-use api\email\MailController;
 use App\Event\Tournament\Email\CancelEvent;
 use App\Event\Tournament\Email\EndEvent;
 use App\Event\Tournament\Email\PlayerRankTournamentEvent;
@@ -16,8 +15,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 class TournamentSendEmailSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        protected EntityManagerInterface $entityManager,
-        protected MailController $mailController
+        protected EntityManagerInterface $entityManager
     ) {
     }
 
@@ -28,11 +26,7 @@ class TournamentSendEmailSubscriber implements EventSubscriberInterface
 
     public function sendEmail(array $data): void
     {
-        $this->mailController->sendMail(
-            to: $data['to'],
-            subject: $data['subject'],
-            mailBody: $data['message'],
-        );
+        // sendEmail
     }
 
     public static function getSubscribedEvents(): array

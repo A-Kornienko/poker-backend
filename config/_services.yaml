@@ -18,21 +18,5 @@ services:
       - '../src/Entity/'
       - '../src/Kernel.php'
 
-  # Registering MailController as a service
-  api\email\MailController:
-    class: api\email\MailController
-    public: true
-
-  # Registering MailController as a service
-  api\email\SpamProtector:
-    class: api\email\SpamProtector
-    public: true
-
-  ## For server
-  App\Service\EasyAdmin\EasyAdminAssetsPackage:
-    decorates: EasyCorp\Bundle\EasyAdminBundle\Asset\AssetPackage
-    arguments:
-      $requestStack: "@request_stack"
-
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones

@@ -12,12 +12,19 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use inc\User as MainUser;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\HasLifecycleCallbacks]
+#[UniqueEntity(
+    fields: ['email'],
+    errorPath: 'email',
+    message: 'This email is already registered.'
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use DateTrait;
@@ -33,9 +40,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: "login", type: Types::STRING, length: 70)]
     private string $login;
 
-    #[ORM\Column(name: "email", type: Types::STRING, length: 70)]
+    #[ORM\Column(name: "email", type: Types::STRING, length: 70, unique: true, index: true, nullable: false)]
+    #[Assert\NotBlank(message: 'Email cannot be empty.')]
+    #[Assert\Email(message: 'Invalid email format.')]
+    #[Assert\Length(min: 5, max: 70)]
     private string $email;
 
+    #[Assert\NotBlank(message: 'Password cannot be empty.')]
+    #[Assert\Length(min: 6, max: 70)]
     #[ORM\Column(name: "password", type: Types::STRING, length: 70)]
     private string $password;
 
@@ -229,7 +241,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->id;
+        return (string) $this->email;
     }
 
     public function setRole(UserRole $role): static

@@ -19,10 +19,7 @@ abstract class AbstractHandler
     public function __construct(
         protected Security $security,
         protected TranslatorInterface $translator,
-    ) {
-        global $language;
-        $this->translator->setLocale('ru');
-    }
+    ) {}
 
     protected function getJsonParam(
         Request $request,

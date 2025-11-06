@@ -35,10 +35,7 @@ class MainController extends AbstractController
 
     protected function renderMainTemplate(?array $params = []): Response
     {
-        global $language;
-
-        $params['language'] = 'ru';//$language;
-
+        $params['language'] = 'en';
         return $this->render('main.html.twig', $params);
     }
 }

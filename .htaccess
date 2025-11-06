@@ -8,5 +8,5 @@ RewriteEngine on
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
-    RewriteRule ^(.*)$ /poker2/public/index.php [L,QSA]
+    RewriteRule ^(.*)$ /public/index.php [L,QSA]
 </IfModule>

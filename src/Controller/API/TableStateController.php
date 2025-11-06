@@ -42,9 +42,9 @@ class TableStateController extends BaseApiController
                 ob_flush();
                 flush();
 
-                if ($state['state'] === TableState::Init->value) {
-                    break;
-                }
+                // if ($state['state'] === TableState::Init->value) {
+                //     break;
+                // }
 
                 unset($state);
                 ob_end_clean();

@@ -4,7 +4,6 @@ namespace App\Security\Voter;
 
 use App\Entity\Table;
 use App\Entity\TableSetting;
-use App\Entity\TableUser;
 use App\Entity\User;
 use App\Enum\TableType;
 use App\Enum\TableUserStatus;
