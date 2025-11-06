@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Handler\Tournaments\Registration;
 
-use api\exchange\Currency;
 use App\Entity\Tournament;
 use App\Entity\TournamentUser;
 use App\Entity\User;
@@ -121,13 +120,10 @@ abstract class AbstractTournamentRegistration implements TournamentRegistrationI
 
     protected function validateUsdBalance(Tournament $tournament, User $user): void
     {
-        $mainUser         = $user->getMainUser();
-        if (!$mainUser) {
-            return;
-        }
-        $actualUsdBalance = Currency::converter($mainUser->getBalance(), $mainUser->getUserInfo()['currency'], 'USD');
+        $entrySumString = (string) $tournament->getSetting()->getEntrySum();
+        $actualBalance = $user->getBalance();
 
-        if ($tournament->getSetting()->getEntrySum() > $actualUsdBalance) {
+        if (bccomp($entrySumString, $actualBalance, 2) === 1) {
             ResponseException::makeExceptionByCode($this->translator, ErrorCodeHelper::SMALL_BALANCE);
         }
     }

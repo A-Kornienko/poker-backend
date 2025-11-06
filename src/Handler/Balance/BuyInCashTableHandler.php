@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Handler\Balance;
 
-use api\exchange\Currency;
 use App\Entity\TableUser;
 use App\Exception\ResponseException;
 use App\Handler\AbstractHandler;
@@ -25,35 +24,32 @@ class BuyInCashTableHandler extends AbstractHandler
 
     public function __invoke(TableUser $player, float $chips): void
     {
-        $user     = $player->getUser();
-        $mainUser = $user->getMainUser();
+        $user = $player->getUser();
 
-        if (!$mainUser) {
-            return;
-        }
+        $actualBalance = $user->getBalance();
+        $chipsString = (string) $chips;
 
-        $actualUsdBalance = Currency::converter($mainUser->getBalance(), $mainUser->getUserInfo()['currency'], 'USD');
-
-        if ($actualUsdBalance < $chips) {
+        if (bccomp($actualBalance, $chipsString, 2) === -1) {
             ResponseException::makeExceptionByCode($this->translator, ErrorCodeHelper::INCORRECT_BALANCE);
         }
-
-        $convertedSum = Currency::converter($chips, 'USD', $mainUser->getUserInfo()['currency']);
-        $mainUser->changeBalance(-$convertedSum, 'Poker: Connected to table ' . $player->getTable()->getName() . ' with ' . $convertedSum . ' USD');
+        // subtract from the balance
+        $newActualBalance = bcsub($actualBalance, $chipsString, 2);
 
         $this->entityManager->getConnection()->beginTransaction();
 
         try {
             $player->setStack($chips);
+            $user->setBalance($newActualBalance);
             $this->entityManager->persist($player);
+            $this->entityManager->persist($user);
 
             $this->entityManager->getConnection()->commit();
         } catch (\Exception $e) {
-            // Откатываем транзакцию в случае ошибки
+            // We roll back the transaction in case of an error
             $this->entityManager->getConnection()->rollBack();
-            $convertedSum = Currency::converter($chips, 'USD', $mainUser->getUserInfo()['currency']);
-            $mainUser->changeBalance($convertedSum, 'Poker: Rollback connection to table ' . $player->getTable()->getName());
-
+            $user->setBalance($actualBalance);
+            $this->entityManager->persist($user);
+            
             throw $e;
         }
     }

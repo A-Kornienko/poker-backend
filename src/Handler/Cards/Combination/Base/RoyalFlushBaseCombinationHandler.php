@@ -18,7 +18,7 @@ class RoyalFlushBaseCombinationHandler extends AbstractBaseCombinationHandler
      */
     public function getCombination(Card ...$cards): ?Combination
     {
-        // Сортируем карты по возрастанию
+        // Sort the cards in descending order
         $cards              = $this->sortCardDesc($cards);
         $groupedCardsBySuit = $this->groupCardsBySuit($cards);
         $applicableSuits    = array_filter(

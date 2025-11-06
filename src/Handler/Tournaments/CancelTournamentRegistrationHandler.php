@@ -52,7 +52,7 @@ class CancelTournamentRegistrationHandler extends AbstractHandler
 
             $this->entityManager->getConnection()->commit();
         } catch (\Exception $e) {
-            // Откат транзакции в случае ошибки
+            // Rollback the transaction in case of an error
             $this->entityManager->getConnection()->rollBack();
 
             throw $e;

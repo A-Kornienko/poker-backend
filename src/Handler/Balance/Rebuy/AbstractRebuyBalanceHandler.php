@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Handler\Balance\Rebuy;
 
-use api\exchange\Currency;
 use App\Entity\Table;
 use App\Entity\TableUser;
 use App\Entity\User;
@@ -87,26 +86,20 @@ abstract class AbstractRebuyBalanceHandler
             ResponseException::makeExceptionByCode($this->translator, ErrorCodeHelper::PLAYER_NOT_FOUND);
         }
 
-        $mainUser           = $user->getMainUser();
-
-        if (!$mainUser) {
-            return;
-        }
-
-        $actualUsdBalance   = Currency::converter($mainUser->getBalance(), $mainUser->getUserInfo()['currency'], 'USD');
-        $sumPendingInvoices = 0;
-
         $pendingInvoices = $this->tableUserInvoiceRepository->findBy([
             'table'  => $player->getTable(),
             'user'   => $player->getUser(),
             'status' => TableUserInvoiceStatus::Pending
         ]);
 
+        $sumPendingInvoices = 0;
         foreach ($pendingInvoices as $pendingInvoice) {
             $sumPendingInvoices = Calculator::add($sumPendingInvoices, $pendingInvoice->getSum());
         }
 
-        if ($actualUsdBalance < Calculator::add($sumPendingInvoices, $stack)) {
+        $actualBalance = $user->getBalance();
+        $sumPendingInvoicesAndStackString = (string) Calculator::add($sumPendingInvoices, $stack);
+        if (bccomp($actualBalance, $sumPendingInvoicesAndStackString, 2) === -1) {
             ResponseException::makeExceptionByCode($this->translator, ErrorCodeHelper::INCORRECT_BALANCE);
         }
 
@@ -114,10 +107,10 @@ abstract class AbstractRebuyBalanceHandler
 
         try {
             $this->tableUserInvoiceService->create($player, $stack);
-            $this->entityManager->flush(); // Сохраняем изменения в базе данных
+            $this->entityManager->flush(); // We save the changes in the database
             $this->entityManager->getConnection()->commit();
         } catch (\Exception $e) {
-            // Откатываем транзакцию в случае ошибки
+            // We roll back the transaction in case of an error
             $this->entityManager->getConnection()->rollBack();
 
             throw $e;
@@ -126,24 +119,21 @@ abstract class AbstractRebuyBalanceHandler
 
     protected function addStack(TableUser $player, User $user, float $amount): void
     {
-        $mainUser = $user->getMainUser();
-        if (!$mainUser) {
-            return;
-        }
         $chips = $player->getStack();
-        $convertedSum = Currency::converter($amount, 'USD', $mainUser->getUserInfo()['currency']);
+        $amountString = (string)$amount;
+        $actualBalance = $user->getBalance();
 
-        if ($mainUser->getBalance() >= $convertedSum) {
-            $mainUser->changeBalance(
-                -$convertedSum,
-                'Poker:  Rebuy ' . $chips . ' chips at the cash table' . $player->getTable()->getName(
-                ) . ' for sum ' . $convertedSum
+        // subtract from the balance only if there are enough funds
+        if (bccomp($actualBalance, $amountString, 2) === 1) {
+            $user->setBalance(
+                bcsub($user->getBalance(), $amountString, 2)
             );
 
             $player->setStack($chips + $amount);
             $player->setStatus(TableUserStatus::Pending);
 
             $this->entityManager->persist($player);
+            $this->entityManager->persist($user);
         }
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Handler\Balance;
 
-use api\exchange\Currency;
 use App\Entity\TableUser;
 use App\Enum\{TableUserInvoiceStatus, TableUserStatus};
 use App\Handler\AbstractHandler;
@@ -37,8 +36,7 @@ class ApproveCacheTablePlayerInvoicesHandler extends AbstractHandler
             'status' => TableUserInvoiceStatus::Pending
         ]);
 
-        $user     = $player->getUser();
-        $mainUser = $this->userService->findMainUser($user);
+        $user = $player->getUser();
 
         if (!$pendingInvoices) {
             return;
@@ -51,19 +49,21 @@ class ApproveCacheTablePlayerInvoicesHandler extends AbstractHandler
             /** @var TableUserInvoice $invoice */
             foreach ($pendingInvoices as $invoice) {
                 $chips        = Calculator::add($invoice->getSum(), $player->getStack());
-                $convertedSum = Currency::converter($invoice->getSum(), 'USD', $mainUser->getUserInfo()['currency']);
+                $invoiceSumString = (string) $invoice->getSum();
+                $actualBalance = $user->getBalance();
 
-                if ($mainUser->getBalance() >= $convertedSum) {
-                    $mainUser->changeBalance(
-                        -$convertedSum,
-                        'Poker:  Rebuy ' . $chips . ' chips at the cash table' . $player->getTable()->getName() . ' for sum ' . $convertedSum
-                    );
+                if (bccomp($actualBalance, $invoiceSumString, 2) === 1) {
 
+                    // Deduct the invoice sum from the user's balance
+                    $newBalance = bcsub($actualBalance, $invoiceSumString, 2);
+                    $user->setBalance($newBalance);
+                    
                     $player->setStack($chips);
                     $invoice->setStatus(TableUserInvoiceStatus::Completed);
 
                     $this->entityManager->persist($invoice);
                     $this->entityManager->persist($player);
+                    $this->entityManager->persist($user);
 
                     continue;
                 }
@@ -71,6 +71,7 @@ class ApproveCacheTablePlayerInvoicesHandler extends AbstractHandler
                 $invoice->setStatus(TableUserInvoiceStatus::Failed);
                 $this->entityManager->persist($invoice);
 
+                // Keep track of handled invoices for potential rollback
                 $handledInvoices[] = $invoice;
             }
 
@@ -80,15 +81,17 @@ class ApproveCacheTablePlayerInvoicesHandler extends AbstractHandler
 
             $this->entityManager->getConnection()->commit();
         } catch (\Exception $e) {
-            // Откатываем транзакцию в случае ошибки
+            // We roll back the transaction in case of an error
             $this->entityManager->getConnection()->rollBack();
 
             foreach ($handledInvoices as $invoice) {
-                $convertedSum = Currency::converter($invoice->getSum(), 'USD', $mainUser->getUserInfo()['currency']);
-                $mainUser->changeBalance(
-                    $convertedSum,
-                    'Poker: Rollback rebuy ' . $chips . ' chips at the cash table ' . $player->getTable()->getName() . ' for sum ' . $convertedSum
-                );
+                // Revert the invoice
+                $invoiceString = (string) $invoice->getSum();
+                $actualBalance = $user->getBalance();
+                $newActualBalance = bcadd($actualBalance, $invoiceString, 2);
+                $user->setBalance($newActualBalance);
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
             }
 
             throw $e;

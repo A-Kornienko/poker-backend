@@ -32,7 +32,7 @@ class Tournament
     #[ORM\Column(name: "image", type: Types::STRING, nullable: true)]
     private ?string $image = null;
 
-    // Дата и время начала турнира.
+    // Date and time of the start of the tournament.
     #[ORM\Column(name: "date_start", type: Types::INTEGER, options: ["default" => 0])]
     private ?int $dateStart = 0;
 
@@ -51,19 +51,19 @@ class Tournament
     #[ORM\Column(name: "status", type: Types::STRING, enumType: TournamentStatus::class, options: ["default" => TournamentStatus::Pending])]
     private TournamentStatus $status = TournamentStatus::Pending;
 
-    // Время начала регистрации на турнир
+    // Date and time of the start of registration for the tournament
     #[ORM\Column(name: "date_start_registration", type: Types::INTEGER, options: ["default" => 0])]
     private int $dateStartRegistration = 0;
 
-    // Время окончания регистрации на турнир
+    // Date and time of the end of registration for the tournament
     #[ORM\Column(name: "date_end_registration", type: Types::INTEGER, options: ["default" => 0])]
     private int $dateEndRegistration = 0;
 
-    // Возможность автоповтора турнира
+    // Ability to auto-repeat the tournament
     #[ORM\Column(name: "autorepeat", type: Types::BOOLEAN, options: ["default" => false])]
     private bool $autorepeat = false;
 
-    // Время создания нового турнира после завершения текущего
+    // Time to create a new tournament after the current one ends
     #[ORM\Column(name: "autorepeat_date", type: Types::INTEGER, nullable: true)]
     private ?int $autorepeatDate = null;
 

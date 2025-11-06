@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Handler\Tournaments;
 
-use api\exchange\Currency;
 use App\Entity\Tournament;
 use App\Entity\TournamentUser;
 use App\Handler\AbstractHandler;
@@ -32,7 +31,7 @@ class ResolvePrizesTournamentHandler extends AbstractHandler
 
     protected function resolveUnclaimed(Collection $tournamentUsers, array $tournamentPrizes): void
     {
-        //возвращает призы без победителя
+        // returns prizes without a winner
         foreach ($tournamentPrizes as $key => $tournamentPrize) {
             if ($tournamentPrize->getWinner()) {
                 continue;
@@ -41,10 +40,11 @@ class ResolvePrizesTournamentHandler extends AbstractHandler
             foreach ($tournamentUsers->toArray() as $tournamentUser) {
                 if ($tournamentUser->getRank() === $key + 1) {
                     $tournamentPrize->setWinner($tournamentUser->getUser());
-                    $mainUser     = $tournamentUser->getUser()->getMainUser();
-                    $convertedSum = Currency::converter($tournamentPrize->getSum(), 'USD', $mainUser->getUserInfo()['currency']);
-                    $mainUser->changeBalance($convertedSum);
 
+                    // add prize sum to user balance
+                    $user = $tournamentUser->getUser();
+                    $newActualBalance = bcadd($user->getBalance(), (string) $tournamentPrize->getSum(), 2);
+                    $user->setBalance($newActualBalance);
                     $this->entityManager->persist($tournamentPrize);
                 }
             }
@@ -72,20 +72,15 @@ class ResolvePrizesTournamentHandler extends AbstractHandler
 
             if (!$tournamentPrize->getWinner()) {
                 $tournamentPrize = $tournamentPrize->setWinner($tournamentWinner->getUser());
-                $mainUser        = $tournamentWinner->getUser()->getMainUser();
-                $convertedSum    = Currency::converter(
-                    $tournamentPrize->getSum(),
-                    'USD',
-                    $mainUser->getUserInfo()['currency']
-                );
-                $mainUser->changeBalance(
-                    $convertedSum,
-                    'Poker: You won in tournament ' . $tournament->getName(
-                    ) . ', your rank is ' . $tournamentWinner->getRank()
-                );
+
+                // add prize sum to user balance
+                $user = $tournamentWinner->getUser();
+                $newActualBalance = bcadd($user->getBalance(), (string) $tournamentPrize->getSum(), 2);
+                $user->setBalance($newActualBalance);
             }
 
             $this->entityManager->persist($tournamentPrize);
+            $this->entityManager->persist($user);
             $this->entityManager->remove($tableUserWinner);
             $this->entityManager->flush();
         }

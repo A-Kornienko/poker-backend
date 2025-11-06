@@ -62,13 +62,12 @@ class FormatTableCommand extends Command implements CronCommandInterface
                     && $formatTable->getTournament()->getStatus() !== TournamentStatus::Finished
                     && $formatTable->getTournament()->getStatus() !== TournamentStatus::Canceled
                 ) {
-                    // Создаем новый экземпляр сущности
+                    // create new ReformTableQueue entity
                     $reformTableQueue = new ReformTableQueue();
                     $reformTableQueue->setTable($formatTable);
                     $reformTableQueue->setTournament($formatTable->getTournament());
                     $reformTableQueue->setTableSession($formatTable->getSession() ?? '');
 
-                    // Сохраняем сущность в базе данных
                     $this->entityManager->persist($reformTableQueue);
                     $this->entityManager->flush();
                 }

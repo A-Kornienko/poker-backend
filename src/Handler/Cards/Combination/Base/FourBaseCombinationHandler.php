@@ -14,7 +14,7 @@ class FourBaseCombinationHandler extends AbstractBaseCombinationHandler
      */
     public function getFourCombinations(Card ...$cards): ?array
     {
-        // Сортируем карты по убыванию
+        // Sort cards in descending order
         $cards               = $this->sortCardDesc($cards);
         $groupedCardsByValue = $this->groupCardsByValue($cards);
         $fours               = array_filter(

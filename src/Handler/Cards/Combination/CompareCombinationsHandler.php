@@ -10,12 +10,12 @@ class CompareCombinationsHandler
     {
         for ($i = 0; $i < 5; $i++) {
             if ($combinationCardsA[$i]->getValue() !== $combinationCardsB[$i]->getValue()) {
-                // Если значения не равны, возвращаем разницу между ними
+                // If the values are not equal, return the difference between them
                 return $combinationCardsB[$i]->getValue() - $combinationCardsA[$i]->getValue();
             }
         }
 
-        // Если все значения равны, возвращаем 0
+        // If all values are equal, return 0
         return 0;
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Handler\Balance;
 
-use api\exchange\Currency;
 use App\Entity\TableUser;
 use App\Enum\TableUserInvoiceStatus;
 use App\Handler\AbstractHandler;
@@ -38,20 +37,12 @@ class ReturnRemainingsPlayerBalanceHandler extends AbstractHandler
             'status' => TableUserInvoiceStatus::Pending
         ]);
 
-        $user         = $player->getUser();
-        $mainUser     = $this->userService->findMainUser($user);
+        $user = $player->getUser();
 
-        if (!$mainUser) {
-            return;
-        }
+        $stackString = (string) $player->getStack();
+        $actualBalance = $user->setBalance(bcadd($user->getBalance(), $stackString, 2));
+        $this->entityManager->persist($user);
 
-        $convertedSum = Currency::converter($player->getStack(), 'USD', $mainUser->getUserInfo()['currency']);
-        $mainUser->changeBalance(
-            $convertedSum,
-            'Poker: Return remaining balance from table ' . $player->getTable()->getName() . ' for sum ' . $convertedSum
-        );
-
-        $oldChipsQty = $player->getStack();
         $player->setStack(0);
 
         $this->entityManager->getConnection()->beginTransaction();
@@ -59,6 +50,7 @@ class ReturnRemainingsPlayerBalanceHandler extends AbstractHandler
         try {
             /** @var TableUserInvoice $invoice */
             foreach ($pendingInvoices as $invoice) {
+                // Return money to user balance
                 $invoice->setStatus(TableUserInvoiceStatus::Back);
                 $this->entityManager->persist($invoice);
             }
@@ -68,13 +60,11 @@ class ReturnRemainingsPlayerBalanceHandler extends AbstractHandler
 
             $this->entityManager->getConnection()->commit();
         } catch (\Exception $e) {
-            // Откатываем транзакцию в случае ошибки
+            // We roll back the transaction in case of an error
             $this->entityManager->getConnection()->rollBack();
-            $convertedSum = Currency::converter($oldChipsQty, 'USD', $mainUser->getUserInfo()['currency']);
-            $mainUser->changeBalance(
-                -$convertedSum,
-                'Poker: Rollback of remaining balance return from table ' . $player->getTable()->getName() . ' for sum ' . $convertedSum
-            );
+            $user->setBalance(bcsub((string) $actualBalance, $stackString, 2));
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
 
             throw $e;
         }

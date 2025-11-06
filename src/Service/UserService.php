@@ -6,7 +6,6 @@ use App\Entity\User;
 use App\Enum\UserRole;
 use App\Repository\TableUserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use inc\User as MainUser;
 
 class UserService
 {
@@ -35,11 +34,6 @@ class UserService
         $this->save($user);
 
         return $user;
-    }
-
-    public function findMainUser(User $user)
-    {
-        return MainUser::findOneBy(['id' => $user->getExternalId()]);
     }
 
     public function getMyTables(User $user): array

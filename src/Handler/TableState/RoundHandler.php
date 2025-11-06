@@ -28,20 +28,20 @@ class RoundHandler
     {
         $this->playerService->preparePlayersToNewRound($table->getTableUsers()->toArray());
 
-        // Формируем банки на столе.
+        // Get the table rake status and calculate the bank.
         $table->setRakeStatus(true);
         ($this->calculateBankHandler)($table);
 
-        // Получаем список активных игроков отсортировных и группированых по номеру места.
+        // Get the list of active players sorted and grouped by seat number.
         $activePlayersSortedByPlace = $this->tableUserRepository->getPlayersSortedByPlace($table);
 
-        // Если все игроки кроме последнего играют в пас, запускаем быстрый финиш раздачи
+        // If all players except the last one are folding, start a fast finish round
         if ($this->isFastFinishRoundStarted($table, $activePlayersSortedByPlace)) {
             return;
         }
 
         $table = ($this->setTableCardsHandler)($table, $table->getRound()->countTableCards());
-        // Если оставшиеся игроки находятся ва-банке кроме последнего, запускаем cмену раундов
+        // If the remaining players are all-in except the last one, start changing rounds
         $activePlayers = $this->playerService->excludeSilentPlayers($activePlayersSortedByPlace);
         $maxBet        = $this->tableUserRepository->getMaxBet($table);
         if ($this->isNextRoundStarted($table, $activePlayers, $maxBet)) {

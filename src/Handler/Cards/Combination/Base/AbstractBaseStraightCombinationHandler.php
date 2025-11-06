@@ -19,16 +19,16 @@ class AbstractBaseStraightCombinationHandler extends AbstractBaseCombinationHand
 
     protected function getAllStraightCombinations(array $cards, int $length = 5)
     {
-        // Шаг 1: Группировка по значениям и сбор типов и мастей
+        // 1 Step: Group by values and collect types and suits
         $valueMap = $this->groupCardsByValue($cards);
-        // Получение отсортированных уникальных значений
+        // Get sorted unique values
         $uniqueValues = array_keys($valueMap);
         $straights    = [];
 
-        // Шаг 2: Поиск всех возможных последовательных последовательностей
+        // 2 Step: Find all possible consecutive sequences
         for ($i = 0; $i <= count($uniqueValues) - $length; $i++) {
             $currentSequence = array_slice($uniqueValues, $i, $length);
-            // Проверка, что последовательность действительно подряд идущая
+            // Checking that the sequence is indeed consecutive
             $isConsecutive = true;
             for ($j = 0; $j < $length - 1; $j++) {
                 if ($currentSequence[$j] - 1 !== $currentSequence[$j + 1]) {
@@ -41,7 +41,7 @@ class AbstractBaseStraightCombinationHandler extends AbstractBaseCombinationHand
                 continue;
             }
 
-            // Шаг 3: Генерация всех комбинаций типов и мастей для текущей последовательности
+            // 3 Step: Generate all type and suit combinations for the current sequence
             $typeSuitList = [];
             foreach ($currentSequence as $value) {
                 $typeSuitList[] = $valueMap[$value];
@@ -49,7 +49,7 @@ class AbstractBaseStraightCombinationHandler extends AbstractBaseCombinationHand
 
             $typeSuitCombinations = $this->cartesianCard($typeSuitList);
             foreach ($typeSuitCombinations as $typeSuitCombinationCard) {
-                // Формируем комбинацию как массив объектов с 'value', 'type' и 'suit'
+                // Get all cards for the current straight combination
                 $combination = [];
                 for ($k = 0; $k < $length; $k++) {
                     $combination[] = $typeSuitCombinationCard[$k];
@@ -58,12 +58,12 @@ class AbstractBaseStraightCombinationHandler extends AbstractBaseCombinationHand
             }
         }
 
-        // Шаг 4: Фильтрация уникальных комбинаций
+        // 4 Step: Filter unique combinations
         $uniqueStraights = [];
         $seenSignatures  = [];
 
         foreach ($straights as $straight) {
-            // Создаем подпись комбинации на основе типов и мастей
+            // create signature based on types and suits
             $signature = '';
             foreach ($straight as $item) {
                 $signature .= $item->__toString();
@@ -77,7 +77,7 @@ class AbstractBaseStraightCombinationHandler extends AbstractBaseCombinationHand
         return $uniqueStraights;
     }
 
-    // Вспомогательная функция для вычисления декартова произведения массивов
+    // Function to compute the Cartesian product of arrays of Card objects
     protected function cartesianCard($typeSuitList)
     {
         $result = [[]];

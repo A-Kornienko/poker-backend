@@ -17,7 +17,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\HasLifecycleCallbacks]
 class Table
 {
-    //TODO поля связанные с настройками стола были перенесены в TableSetting
+    //TODO fields related to table settings have been moved to TableSetting
+    //TODO it will be necessary to remove these fields from Table in the future and move the logic for working with them to TableSetting
+    //TODO it is also necessary to update all places in the code where these fields are used directly from Table
     use DateTrait;
 
     #[ORM\Id]

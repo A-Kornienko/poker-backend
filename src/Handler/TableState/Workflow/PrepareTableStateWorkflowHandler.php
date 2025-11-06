@@ -43,8 +43,8 @@ class PrepareTableStateWorkflowHandler implements TableStateWorkflowHandlerInter
         $this->entityManager->getConnection()->beginTransaction();
 
         try {
-            $this->tableService->refreshTable($table); // Обновляем стол.
-            $this->playerService->refreshPlayers($table); // Обновляем игроков.
+            $this->tableService->refreshTable($table); // Update the table.
+            $this->playerService->refreshPlayers($table); // Update the players.
 
             $this->entityManager->getConnection()->commit();
         } catch (Exception $e) {

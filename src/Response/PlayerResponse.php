@@ -62,7 +62,6 @@ class PlayerResponse
         $response = [];
         foreach ($players as $player) {
             $response[] = [
-                // 'country' => $player->getUser()->getMainUser()->getUserInfo()['country'],
                 'login' => $player->getUser()->getLogin(),
                 'table' => $player->getTable()->getNumber(),
                 'tableId' => $player->getTable()->getId(),

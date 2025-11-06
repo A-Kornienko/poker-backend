@@ -57,7 +57,7 @@ class RunTableStateWorkflowHandler implements TableStateWorkflowHandlerInterface
 
         $activePlayers = $this->tableUserRepository->getPlayersSortedByPlace($table);
 
-        // Если все игроки кроме последнего играют в пас, запускаем быстрый финиш раздачи
+        // If all players except the last one are folding, start a fast finish of the round
         if ($this->roundHandler->isFastFinishRoundStarted($table, $activePlayers)) {
             return;
         }

@@ -93,7 +93,7 @@ class UpdateTimeBankHandler
         $activationTime = $tableUserTimeBank->getActivationTime();
         $timeBank       = $tableUserTimeBank->getTime();
 
-        // Потраченное время из таймбанка
+        // Used spent time from time bank
         $spentTimeBank = $currentTime - $activationTime;
         $remainingTime = $spentTimeBank > 0 ? $timeBank - $spentTimeBank : $timeBank;
         $tableUserTimeBank->setTime($remainingTime < 1 ? 0 : $remainingTime);

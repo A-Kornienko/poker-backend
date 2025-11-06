@@ -383,7 +383,7 @@ class TableUser
         // }
 
         // $cacheItem->set($cacheData);
-        // $cacheItem->expiresAfter(3600); // 1 час
+        // $cacheItem->expiresAfter(3600); // 1 hour
         // $cache->save($cacheItem);
 
         // Tournament

@@ -6,8 +6,8 @@ namespace App\Enum;
 
 enum CardSuit: string
 {
-    case Diamond = 'Diamond'; // Бубны
-    case Club    = 'Club'; // Трефы
+    case Diamond = 'Diamond'; // Бубни
+    case Club    = 'Club'; // Трефи
     case Heart   = 'Heart'; // Черви
     case Spade   = 'Spade'; // Пики
 }

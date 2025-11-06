@@ -34,18 +34,18 @@ class TournamentSetting
     #[ORM\Column(name: "type", type: Types::STRING, length: 255, enumType: TournamentType::class, options: ["default" => TournamentType::Paid])]
     private TournamentType $type = TournamentType::Paid;
 
-    // Сумма докупки или входа на турнир.
+    // Sum of rebuy or entry to the tournament.
     #[ORM\Column(name: "entry_sum", type: Types::DECIMAL, precision: 10, scale:2, options: ["default" => 0])]
     private ?float $entrySum = 0;
 
     #[ORM\Column(name: "entry_chips", type: Types::DECIMAL, precision: 10, scale:2, options: ["default" => 0])]
     private ?float $entryChips = 0;
 
-    // Количество игроков для старта турнира.
+    // count of players to start the tournament.
     #[ORM\Column(name: "start_count_players", type: Types::INTEGER, options: ["default" => 0])]
     private ?int $startCountPlayers = 0;
 
-    // Настройки перерыва
+    // Settings for pause/breaks
     #[ORM\Column(name: "break_settings", type: Types::JSON, nullable: true)]
     private ?array $breakSettings = [];
 
@@ -55,11 +55,11 @@ class TournamentSetting
     #[ORM\Column(name: "rule", type: Types::STRING, enumType: Rules::class, options: ["default" => Rules::TexasHoldem])]
     private ?Rules $rule = Rules::TexasHoldem;
 
-    // Количество участников в турнире
+    // Maximum number of participants in the tournament
     #[ORM\Column(name: "limit_members", type: Types::INTEGER, nullable: true)]
     private ?int $limitMembers = null;
 
-    // Возможность возможность синхронизации столов для призовых мест
+    // Ability to synchronize tables for prize places
     #[ORM\Column(name: "table_synchronization", type: Types::BOOLEAN, options: ["default" => false])]
     private bool $tableSynchronization = false;
 

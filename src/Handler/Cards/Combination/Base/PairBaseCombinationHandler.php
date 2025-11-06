@@ -9,14 +9,14 @@ class PairBaseCombinationHandler extends AbstractBaseCombinationHandler
 {
     public function getPairCombinations(Card ...$cards): ?array
     {
-        // Сортируем карты по убыванию.
+        // Sort the cards in descending order.
         $cards               = $this->sortCardDesc($cards);
         $groupedCardsByValue = $this->groupCardsByValue($cards);
 
         $pairs = [];
-        // Находим все пары
+        // We find all pairs in the grouped cards.
         foreach ($groupedCardsByValue as $groupedCards) {
-            // Если в группе меньше 2 карт не пара
+            // If there are less than 2 cards in the group, it's not a pair.
             if (count($groupedCards) < 2) {
                 continue;
             }

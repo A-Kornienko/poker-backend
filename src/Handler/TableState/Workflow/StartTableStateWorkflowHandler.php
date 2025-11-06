@@ -76,7 +76,7 @@ class StartTableStateWorkflowHandler implements TableStateWorkflowHandlerInterfa
         $table->setSession(Uuid::v4()->jsonSerialize());
         $table->setRound(Round::PreFlop);
 
-        // Устанавливаем диллера, блайнды за столом и ход первого игрока.
+        // Insert dealer, blinds at the table and first player turn.
         $table = $this->turnHandler->setDealer($table, $activePlayersSortedByPlace);
         $table = ($this->setSmallBlindHandler)($table, $activePlayersSortedByPlace);
         $activeWaitingPlayersSortedByPlace = $this->tableUserRepository->getPlayersSortedByPlace($table, [

@@ -58,8 +58,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: 'role', type: Types::STRING, nullable: false, enumType: UserRole::class, options: ["default" => UserRole::Player->value])]
     private UserRole $role = UserRole::Player;
 
-    #[ORM\Column(name: "language", type: Types::STRING, length: 255, options: ["default" => 'ru'])]
-    private string $language = 'ru';
+    #[ORM\Column(name: "language", type: Types::STRING, length: 255, options: ["default" => 'en'])]
+    private string $language = 'en';
+
+    #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
+    private ?string $balance = '0.00';
 
     /**
      * @var Collection<int, TableUser>
@@ -221,7 +224,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // Методы, требуемые интерфейсом UserInterface
+    // implements UserInterface
     public function getRoles(): array
     {
         return !$this->role ? [UserRole::Player->value] : [$this->role->value];
@@ -234,7 +237,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-        // Очистка временных данных, например plainPassword
+        // If you store any temporary, sensitive data on the user, clear it here
     }
 
     public function getUserIdentifier(): string
@@ -274,17 +277,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
-    }
-
-    public function getMainUser(): ?MainUser
-    {
-        $main_user = MainUser::findOneBy(['id' => $this->externalId]);
-
-        // if (!$main_user) {
-        //     //throw new Exception('Can`t get main user');
-        // }
-
-        return $main_user;
     }
 
     public function getTournaments(): Collection
@@ -355,6 +347,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLanguage(string $language): static
     {
         $this->language = $language;
+
+        return $this;
+    }
+
+    public function getBalance(): ?string
+    {
+        return $this->balance;
+    }
+
+    public function setBalance(?string $balance): static
+    {
+        $this->balance = $balance;
 
         return $this;
     }

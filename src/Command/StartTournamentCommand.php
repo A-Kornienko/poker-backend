@@ -57,6 +57,6 @@ class StartTournamentCommand extends Command implements CronCommandInterface
 
     public function isApplicable(): bool
     {
-        return true; // возвращает всегда true
+        return true; // Always true for cron jobs
     }
 }

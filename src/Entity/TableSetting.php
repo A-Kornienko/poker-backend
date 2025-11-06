@@ -54,11 +54,11 @@ class TableSetting
     #[ORM\Column(name: "rule", type: Types::STRING, enumType: Rules::class, options: ["default" => Rules::TexasHoldem])]
     private ?Rules $rule = null;
 
-    // Процент рейка, применяемый к сумме банка
+    // The percentage of the rake applied to the sum of the pot
     #[ORM\Column(name: "rake", type: Types::FLOAT, options: ["default" => 0.05])]
     private ?float $rake = 0.05;
 
-    // Максимальная сума рейка для банка
+    // The maximum amount of rake for the bank
     #[ORM\Column(name: "rake_cap", type: Types::FLOAT, options: ["default" => 3])]
     private ?float $rakeCap = 3;
 

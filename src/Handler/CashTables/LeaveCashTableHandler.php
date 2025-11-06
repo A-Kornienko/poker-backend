@@ -57,10 +57,10 @@ class LeaveCashTableHandler extends AbstractHandler
             $this->tableService->leaveTable($player);
 
             if ($table->getTableUsers()->count() < 2) {
-                // Обновляем баланс для пользователей за столом.
+                // Update balance for users at the table.
                 ($this->returnRemainingsPlayerBalanceHandler)($player);
 
-                // Удаляем из-за стола всех пользователей которые проиграли или сами пожелали уйти.
+                // Delete all users from the table who lost or wished to leave.
                 $this->playerService->dropLeavers($table);
                 $table->setIsArchived(true);
 

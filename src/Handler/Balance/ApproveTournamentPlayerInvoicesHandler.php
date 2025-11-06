@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Handler\Balance;
 
-use api\exchange\Currency;
 use App\Entity\TableUser;
 use App\Enum\{TableUserInvoiceStatus, TableUserStatus};
 use App\Handler\AbstractHandler;
@@ -37,9 +36,9 @@ class ApproveTournamentPlayerInvoicesHandler extends AbstractHandler
             'status' => TableUserInvoiceStatus::Pending
         ]);
 
-        $user          = $player->getUser();
-        $mainUser      = $this->userService->findMainUser($user);
-        $tournamentSum = $player->getTable()->getTournament()->getSetting()->getBuyInSettings()->getSum();
+        $user                = $player->getUser();
+        $tournamentSum       = $player->getTable()->getTournament()->getSetting()->getBuyInSettings()->getSum();
+        $tournamentSumString = (string) $tournamentSum;
 
         if (!$pendingInvoices) {
             return;
@@ -52,14 +51,15 @@ class ApproveTournamentPlayerInvoicesHandler extends AbstractHandler
             /** @var TableUserInvoice $invoice */
             foreach ($pendingInvoices as $invoice) {
                 $chips        = Calculator::add($invoice->getSum(), $player->getStack());
-                $convertedSum = Currency::converter($tournamentSum, 'USD', $mainUser->getUserInfo()['currency']);
+                $actualBalance = $user->getBalance();
 
-                if ($mainUser->getBalance() >= $convertedSum) {
-                    $mainUser->changeBalance(
-                        -$convertedSum,
-                        'Poker:  Rebuy ' . $chips . ' chips on the tournament' . $player->getTable()->getTournament()->getName() . ' for sum ' . $convertedSum
-                    );
+                if (bccomp($actualBalance, $tournamentSumString, 2) === 1) {
+                    // We subtract the tournament amount from the user's balance
+                    $newBalance = bcsub($actualBalance, $tournamentSumString, 2);
+                    $user->setBalance($newBalance);
+                    $this->entityManager->persist($user);
 
+                    // We add the chips to the player's stack
                     $player->setStack($chips);
                     $player->setCountByuIn($player->getCountByuIn() + 1);
                     $invoice->setStatus(TableUserInvoiceStatus::Completed);
@@ -80,15 +80,15 @@ class ApproveTournamentPlayerInvoicesHandler extends AbstractHandler
 
             $this->entityManager->getConnection()->commit();
         } catch (\Exception $e) {
-            // Откатываем транзакцию в случае ошибки
+            // Something went wrong, we need to rollback the transaction
             $this->entityManager->getConnection()->rollBack();
 
             foreach ($handledInvoices as $invoice) {
-                $convertedSum = Currency::converter($invoice->getSum(), 'USD', $mainUser->getUserInfo()['currency']);
-                $mainUser->changeBalance(
-                    $convertedSum,
-                    'Poker: Rollback rebuy ' . $chips . ' chips on the tournament ' . $player->getTable()->getTournament()->getName() . ' for sum ' . $convertedSum
-                );
+                $InvoiceSumString = (string) $invoice->getSum();
+                $actualBalance    = $user->getBalance();
+                $newBalance       = bcadd($actualBalance, $InvoiceSumString, 2);
+                $user->setBalance($newBalance);
+                $this->entityManager->persist($user);
             }
 
             throw $e;

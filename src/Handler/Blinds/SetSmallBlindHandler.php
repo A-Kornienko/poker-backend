@@ -24,7 +24,7 @@ class SetSmallBlindHandler
         $place         = $table->getDealerPlace();
         $currentPlayer = $activePlayersSortedByPlace[$place];
 
-        // Если не хватает фишек - ставим в аллин
+        // If not enough chips - go all-in
         $smallBlindBet = min($currentPlayer->getStack(), $table->getSmallBlind());
         $stack         = Calculator::subtract($currentPlayer->getStack(), $smallBlindBet);
 
@@ -44,20 +44,20 @@ class SetSmallBlindHandler
      */
     protected function setSmallBlindDefault(Table $table, array $activePlayersSortedByPlace): Table
     {
-        // Получаем места игроков
+        // Get player seats
         $playerPlaces = array_keys($activePlayersSortedByPlace);
-        // Определяем индекс места на котором находится диллер
+        // Get the index of the dealer's place
         $dealerPlaceIndex = array_search($table->getDealerPlace(), $playerPlaces);
-        // Определяем какое место первое в списке активных
+        // Get the first place number of active players
         $firstPlaceNumber = array_key_first($activePlayersSortedByPlace);
-        // Определяем что место диллера не последнее среди активных.
+        // Get whether the dealer's place is not the last among active players.
         $isSmallBlindPlaceNotLast = $dealerPlaceIndex !== false && array_key_exists($dealerPlaceIndex + 1, $playerPlaces);
-        // Определяем следующее место после диллера, которое и будет являться малым блайндом.
+        // Determine the next seat after the dealer, which will be the small blind.
         $smallBlindPlace = $isSmallBlindPlaceNotLast ? $playerPlaces[$dealerPlaceIndex + 1] : $firstPlaceNumber;
-        // Устанавливаем значения для пользовтеля и стола.
+        // Set values for the player and the table.
         $currentPlayer = $activePlayersSortedByPlace[$smallBlindPlace];
 
-        // Если не хватает фишек - ставим в аллин
+        // If not enough chips - go all-in
         $smallBlindBet      = min($currentPlayer->getStack(), $table->getSmallBlind());
         $currentPlayerChips = Calculator::subtract($currentPlayer->getStack(), $smallBlindBet);
 

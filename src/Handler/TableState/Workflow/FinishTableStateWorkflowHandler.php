@@ -80,8 +80,8 @@ class FinishTableStateWorkflowHandler implements TableStateWorkflowHandlerInterf
 
             $table->setTurnPlace(0)->setRoundExpirationTime(time() + static::ROUND_EXPIRATION_TIME);
 
-            $this->updateTableUsersBalance($table); // Обновляем баланс.
-            $this->timeBankHandler->updateUserTimeBankByPeriod($table); // Обновляем timeBank по периоду
+            $this->updateTableUsersBalance($table); // Updating balance.
+            $this->timeBankHandler->updateUserTimeBankByPeriod($table); // Updating timeBank by period.
 
             $this->entityManager->persist($table);
             $this->entityManager->flush();

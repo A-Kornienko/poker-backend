@@ -14,17 +14,17 @@ class HighCardCombinationHandler extends AbstractBaseCombinationHandler implemen
     {
         $cards = $this->sortCardDesc($cards);
 
-        // Разделяем карты на карманные (hand) и общие (table).
+        // Separate cards into hand and table types.
         $handKickers  = array_filter($cards, fn($card) => $card->getType() === CardType::Hand);
         $tableKickers = array_filter($cards, fn($card) => $card->getType() === CardType::Table);
 
-        // Объединяем первые 2 карманные карты и первые 3 общие карты.
+        // Union of the first 2 hand cards and the first 3 table cards.
         $combination = $this->sortCardDesc(array_merge(
             array_slice($handKickers, 0, 2),
             array_slice($tableKickers, 0, 3)
         ));
 
-        // Возвращаем комбинацию из 5 лучших карт.
+        // Return a combination of the 5 best cards.
         return (new Combination())
             ->setName(CardCombinationRank::HighCard->name)
             ->setRank(CardCombinationRank::HighCard->value)

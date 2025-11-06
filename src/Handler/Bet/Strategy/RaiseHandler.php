@@ -30,7 +30,8 @@ class RaiseHandler extends AbstractBetStrategyHandler implements BetHandlerInter
         $maxBet = $maxBet < $table->getBigBlind() ? $table->getBigBlind() : $maxBet;
         $bet    = Calculator::add(0, $amount);
         $sumStack = Calculator::add($this->player->getStack(), $this->player->getBet());
-        // Если недостаточно средств
+
+        // If there are not enough funds
         if ($amount > $sumStack) {
             ResponseException::makeExceptionByCode($this->translator, ErrorCodeHelper::BIG_BET);
         }

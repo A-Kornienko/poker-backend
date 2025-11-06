@@ -41,15 +41,15 @@ class TurnHandler
     public function setDealer(Table $table, array $activePlayersSortedByPlace): Table
     {
         /** @var TableUser $tableUser */
-        // Список мест занятых за столом.
+        // List of places occupied at the table.
         $places = array_keys($activePlayersSortedByPlace);
-        // Номер первого занятого места.
+        // Nuмber of the first occupied place.
         $firstPlace = array_key_first($activePlayersSortedByPlace);
-        // Тут мы узнаем какой индекс у места диллера.
+        // Hier we find out the index of the dealer's place.
         $dealerPlaceIndex = (int) array_search($table->getDealerPlace(), $places);
-        // Определяем индекс для нового места диллера.
+        // Get the index for the new dealer's place.
         $newDealerIndex = $dealerPlaceIndex + 1;
-        // Определяем новое место диллеру, если индекс последний, то новый диллер становится на 1 место.
+        // Get the new dealer's place, if the index is the last, then the new dealer takes the 1st place.
         $newDealerPlace = array_key_exists($newDealerIndex, $places) ? $places[$newDealerIndex] : $firstPlace;
 
         return $table->setDealerPlace($newDealerPlace);
@@ -69,7 +69,7 @@ class TurnHandler
             : $this->setFirstTurnDefault($table, $activeTableUsersSortedByPlace);
     }
 
-    // Двигаем право хода к следующему автивному месту.
+    // Move the right to act to the next active seat.
     public function changeTurnPlace(Table $table): void
     {
         $activePlayersSortedByPlace = $this->tableUserRepository->getPlayersSortedByPlace($table);
@@ -80,7 +80,7 @@ class TurnHandler
         $this->entityManager->flush();
     }
 
-    // Меняем право на последнее слово.
+    // Checked when a player makes a raise.
     public function changeLastWordPlace(Table $table, TableUser $currentActiveTableUser): Table
     {
         $activePlayersSortedByPlace = $this->tableUserRepository->getPlayersSortedByPlace($table);
@@ -97,15 +97,15 @@ class TurnHandler
      */
     protected function setFirstTurnFirstRound(Table $table, array $activeTableUsersSortedByPlace): Table
     {
-        // Получаем список всех активных мест.
+        // Get a list of all active seats.
         $activePlaces = array_keys($activeTableUsersSortedByPlace);
-        // Определяем первое активное место.
+        // Get the number of the first active seat.
         $firstPlaceNumber = array_key_first($activeTableUsersSortedByPlace);
-        // Получаем место на котором находится большой блайнд.
+        // Get the index of the big blind place in the list of active seats.
         $lastWordPlaceIndex = array_search($table->getBigBlindPlace(), $activePlaces);
-        // Определяем индекс для первого хода.
+        // Get the index for the first turn.
         $firstTurnIndex = $lastWordPlaceIndex + 1;
-        // Проверяем не является ли большой блайнд последним местом.
+        // Get a flag indicating that the big blind is not the last place.
         $isBigBlindNotLastPlace = $lastWordPlaceIndex !== false && array_key_exists($firstTurnIndex, $activePlaces);
 
         if (
@@ -115,7 +115,7 @@ class TurnHandler
             $lastWordPlaceIndex = $this->calculateLastWordIndex($activeTableUsersSortedByPlace, $lastWordPlaceIndex);
         }
 
-        // Если большой блайн находится не на последнем месте устанавливаем первый ход следующему месту после него
+        // If the big blind is not in the last place, set the first turn to the next place after it
         if ($isBigBlindNotLastPlace) {
             $turnPlace = $activePlaces[$firstTurnIndex];
             if ($activeTableUsersSortedByPlace[$turnPlace]->getSeatOut()) {
@@ -137,7 +137,8 @@ class TurnHandler
         } else {
             $betExpirationTime = time() + ((int)$table->getSetting()->getTurnTime() ?? static::BET_EXPIRATION_TIME);
         }
-        // Если большой блайн находится на последнем месте устанавливаем первый ход, первому месту в списке.
+
+        // If the big blind is in the last place, set the first turn to the first place in the list.
         $activeTableUsersSortedByPlace[$firstPlaceNumber]
             ->setBetExpirationTime($betExpirationTime);
         $table->setTurnPlace($firstPlaceNumber)
@@ -156,11 +157,11 @@ class TurnHandler
      */
     protected function setFirstTurnDefault(Table $table, array $activeTableUsersSortedByPlace): Table
     {
-        // Определяем место за которым первый ход
+        // Get a list of all seats at the table sorted by place.
         $activeTableUsersSortedByPlace = $this->playerService->excludeSilentPlayers($activeTableUsersSortedByPlace);
         $table                         = $this->updateTurnPlace($table, $activeTableUsersSortedByPlace, $table->getDealerPlace());
 
-        // Обновляем право на последнее слово.
+        // Update the right to the last word.
         return $this->updateLastWordPlace($table, $activeTableUsersSortedByPlace);
     }
 
@@ -172,17 +173,17 @@ class TurnHandler
         array $activeTableUsersSortedByPlace,
         int $currentPlace
     ): Table {
-        // Получаем список всех игроков за столом отсортированый по возрастанию мест.
+        // Get a list of all players at the table sorted by ascending places.
         $sortedAllTableUsers = $this->sortTableUsersByPlaceAsc($table->getTableUsers()->toArray());
-        // Получаем список всех мест
+        // Get a list of all places.
         $places = array_keys($sortedAllTableUsers);
-        // Получаем индекс места следующего после текущего.
+        // Get the index of the place next to the current one.
         $nextTurnPlaceIndex = (int) array_search($currentPlace, $places) + 1;
-        // Определяем количество мест в списке после текущего
+        // Get the number of places in the list after the current one.
         $countPlaceAfterCurrentTurn = count($sortedAllTableUsers) - $nextTurnPlaceIndex;
 
-        // Если текущее место не последнее место за столом, тогда вырезаем все места после текущего и добавляем их в начало списка.
-        // Таким образом мы понимает что текущее место является последним в списке, а значит следующий ход у первогоа активного места.
+        // If the current seat is not the last seat at the table, then we cut out all seats after the current one and add them to the beginning of the list.
+        // We do this to make it easier to find the next active seat.
         if ($countPlaceAfterCurrentTurn > 0) {
             $tableUsersAfterCurrentTurn          = array_slice($sortedAllTableUsers, -$countPlaceAfterCurrentTurn);
             $tableUsersBeforeCurrentTurnIncluded = array_slice($sortedAllTableUsers, 0, $nextTurnPlaceIndex);
@@ -190,7 +191,7 @@ class TurnHandler
             $sortedAllTableUsers = array_merge($tableUsersAfterCurrentTurn, $tableUsersBeforeCurrentTurnIncluded);
         }
 
-        //Находим первого активного юзера за столом после текущего и присваиваем ему право первого хода.
+        // Get the next active player after the current one and assign them the right to act.
         /** @var TableUser $tableUser */
         foreach ($sortedAllTableUsers as $tableUser) {
             if (array_key_exists($tableUser->getPlace(), $activeTableUsersSortedByPlace)) {
@@ -264,15 +265,15 @@ class TurnHandler
     {
         $activePlaces = array_keys($activeTableUsersSortedByPlace);
 
-        // Используем do-while чтобы цикл выполнился хотя бы один раз
+        // Use do-while to ensure the loop runs at least once
         do {
-            // Найти индекс предыдущего места за столом
+            // Funded the index of the previous seat at the table
             $currentPlaceIndex = $currentPlaceIndex === 0 ? count($activePlaces) - 1 : $currentPlaceIndex - 1;
 
-            // Получить место
+            // Get the place
             $currentPlace = $activePlaces[$currentPlaceIndex];
 
-            // Получить тип ставки текущего игрока
+            // Get the bet type of the current player
             $currentBetType = $activeTableUsersSortedByPlace[$currentPlace]->getBetType()?->value;
         } while ($currentBetType === BetType::AllIn->value);
 

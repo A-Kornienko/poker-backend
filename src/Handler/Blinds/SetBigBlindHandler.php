@@ -25,7 +25,7 @@ class SetBigBlindHandler
         $firstPlaceNumber = (int) array_key_first($activeTableUsersSortedByPlace);
         $currentTableUser = $activeTableUsersSortedByPlace[$firstPlaceNumber];
 
-        // Если не хватает фишек - ставим в аллин
+        // Set big blind bet, if not enough chips - go all-in
         $bigBlindBet = min($currentTableUser->getStack(), $table->getBigBlind());
         $stack       = Calculator::subtract($currentTableUser->getStack(), $bigBlindBet);
 
@@ -41,20 +41,20 @@ class SetBigBlindHandler
 
     protected function setBigBlindDefault(Table $table, array $activeTableUsersSortedByPlace): Table
     {
-        // Получаем места игроков
+        // Get player places
         $playerPlaces = array_keys($activeTableUsersSortedByPlace);
-        // Определяем индекс места на котором находится малый блайнд
+        // Determine the index of the small blind place
         $smallBlindPlaceIndex = array_search($table->getSmallBlindPlace(), $playerPlaces);
-        // Определяем какое место первое в списке активных
+        // Get the first place number in the list of active players
         $firstPlaceNumber = array_key_first($activeTableUsersSortedByPlace);
-        // Определяем что место малого блайнда не последнее среди активных.
+        // Get whether the small blind place is not the last among active players.
         $isBigBlindPlaceNotLast = $smallBlindPlaceIndex !== false && array_key_exists($smallBlindPlaceIndex + 1, $playerPlaces);
-        // Определяем следующее место после малого блайнда, которое и будет являться большим блайндом.
+        // Determine the next place after the small blind, which will be the big blind.
         $bigBlindPlace = $isBigBlindPlaceNotLast ? $playerPlaces[$smallBlindPlaceIndex + 1] : $firstPlaceNumber;
-        // Устанавливаем значения для пользовтеля и стола.
+        // Set values for the user and the table.
         $currentTableUser = $activeTableUsersSortedByPlace[$bigBlindPlace];
 
-        // Если не хватает фишек - ставим в аллин
+        // If not enough chips - go all-in
         $bigBlindBet           = min($currentTableUser->getStack(), $table->getBigBlind());
         $currentTableUserChips = Calculator::subtract($currentTableUser->getStack(), $bigBlindBet);
 
