@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class RegistrationController extends BaseApiController
 {
-    #[Route('/api/auth/registration', name: 'api_registration', methods: ['POST'])]
+    #[Route('/api/auth/register', name: 'api_registration', methods: ['POST'])]
     public function index(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
@@ -27,6 +27,7 @@ class RegistrationController extends BaseApiController
         /** @var User $user */
         $user = new User();
         $user->setEmail($data['email'] ?? '');
+        $user->setLogin($data['login'] ?? '');
         $user->setPassword($data['password'] ?? '');
         
         $errors = $validator->validate($user);
@@ -39,7 +40,6 @@ class RegistrationController extends BaseApiController
             return $this->response($messages, 400);
         }
 
-        $user->setLogin(strstr($data['email'], '@', true) ?? $data['email']);
         $hashedPassword = $passwordHasher->hashPassword(
             $user,
             $data['password'] ?? ''
@@ -50,5 +50,11 @@ class RegistrationController extends BaseApiController
         $entityManager->flush();
 
         return $this->response(UserResponse::item($user));
+    }
+
+    #[Route('/api/auth/user', name: 'api_user', methods: ['GET'])]
+    public function getApiUser(): JsonResponse
+    {
+        return $this->response(UserResponse::item($this->security->getUser()));
     }
 }

@@ -35,6 +35,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: "external_id", type: Types::INTEGER, options: ["default" => 0])]
     private int $externalId = 0;
 
+    #[Assert\NotBlank(message: 'login cannot be empty.')]
     #[ORM\Column(name: "login", type: Types::STRING, length: 70)]
     private string $login;
 

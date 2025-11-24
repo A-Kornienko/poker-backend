@@ -62,14 +62,16 @@ security:
             stateless: true
             provider: api_users
             jwt: ~
+            logout:
+                path: api_logout
             
-
     access_control:
         - { path: ^/admin/login,           roles: PUBLIC_ACCESS }
         - { path: ^/admin,                 roles: ROLE_ADMIN }
-        - { path: ^/api/auth/registration, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/register,     roles: PUBLIC_ACCESS }
         - { path: ^/api/auth/login,        roles: PUBLIC_ACCESS }
         - { path: ^/api/token/refresh,     roles: PUBLIC_ACCESS }
+        - { path: ^/api/cash-tables,       roles: PUBLIC_ACCESS }
         - { path: ^/api,                   roles: IS_AUTHENTICATED_FULLY }
 when@test:
     security:

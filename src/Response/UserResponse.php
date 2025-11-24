@@ -12,7 +12,7 @@ class UserResponse
     {
         return [
             'user' => [
-                'id'       => $user->getId(),
+                // 'id'       => $user->getId(),
                 'login'    => $user->getLogin(),
                 'email'    => $user->getEmail(),
             ],

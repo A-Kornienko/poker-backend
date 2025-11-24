@@ -19,7 +19,7 @@ final class Version20240920110924 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE `user` ADD COLUMN `language` VARCHAR(5) DEFAULT \'ru\'');
+        $this->addSql('ALTER TABLE `user` ADD COLUMN `language` VARCHAR(5) DEFAULT \'en\'');
     }
 
     public function down(Schema $schema): void
