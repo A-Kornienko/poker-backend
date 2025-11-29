@@ -19,6 +19,7 @@ use Exception;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Entity\User;
 
 class ConnectCashTableHandler extends AbstractHandler
 {
@@ -40,6 +41,7 @@ class ConnectCashTableHandler extends AbstractHandler
             ResponseException::makeExceptionByCode($this->translator, ErrorCodeHelper::NO_SETTINGS);
         }
 
+        /** @var User $user */
         $user   = $this->security->getUser();
         $player = $this->tableUserRepository->findOneBy([
             'user'  => $user->getId(),

@@ -71,6 +71,11 @@ security:
         - { path: ^/api/auth/register,     roles: PUBLIC_ACCESS }
         - { path: ^/api/auth/login,        roles: PUBLIC_ACCESS }
         - { path: ^/api/token/refresh,     roles: PUBLIC_ACCESS }
+
+          # Provide full authentication for specific routes
+        - { path: ^/api/cash-tables/\d+/connect, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/cash-tables/\d+/leave, roles: IS_AUTHENTICATED_FULLY }
+
         - { path: ^/api/cash-tables,       roles: PUBLIC_ACCESS }
         - { path: ^/api,                   roles: IS_AUTHENTICATED_FULLY }
 when@test:
