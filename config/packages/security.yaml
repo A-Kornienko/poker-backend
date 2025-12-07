@@ -62,8 +62,11 @@ security:
             stateless: true
             provider: api_users
             jwt: ~
+            custom_authenticators:
+                - App\Security\ApiQueryParameterAuthenticator
             logout:
                 path: api_logout
+            entry_point: App\Security\ApiQueryParameterAuthenticator
             
     access_control:
         - { path: ^/admin/login,           roles: PUBLIC_ACCESS }
@@ -74,7 +77,7 @@ security:
 
           # Provide full authentication for specific routes
         - { path: ^/api/cash-tables/\d+/connect, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/api/cash-tables/\d+/leave, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/cash-tables/\d+/leave,   roles: IS_AUTHENTICATED_FULLY }
 
         - { path: ^/api/cash-tables,       roles: PUBLIC_ACCESS }
         - { path: ^/api,                   roles: IS_AUTHENTICATED_FULLY }

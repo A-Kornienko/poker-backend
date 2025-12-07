@@ -57,6 +57,7 @@ class BaseApiController extends AbstractController
     {
         $response = new StreamedResponse();
         // Set SSE-specific headers
+        $response->headers->set('Access-Control-Allow-Origin', '*');
         $response->headers->set('Content-Type', 'text/event-stream');
         $response->headers->set('Cache-Control', 'no-cache');
         $response->headers->set('Connection', 'keep-alive');

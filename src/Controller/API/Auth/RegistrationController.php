@@ -51,10 +51,4 @@ class RegistrationController extends BaseApiController
 
         return $this->response(UserResponse::item($user));
     }
-
-    #[Route('/api/auth/user', name: 'api_user', methods: ['GET'])]
-    public function getApiUser(): JsonResponse
-    {
-        return $this->response(UserResponse::item($this->security->getUser()));
-    }
 }

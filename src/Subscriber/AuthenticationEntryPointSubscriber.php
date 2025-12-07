@@ -37,7 +37,7 @@ class AuthenticationEntryPointSubscriber implements EventSubscriberInterface
         $token = $this->tokenStorage->getToken();
 
         if (null === $token || $token->getUser() === null) {
-             $responseData = [
+            $responseData = [
                 'success' => false,
                 'msg'     => 'Unauthorized: Authentication required.',
                 'data'    => [],
