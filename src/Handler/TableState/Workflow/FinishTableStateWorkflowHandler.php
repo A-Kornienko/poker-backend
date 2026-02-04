@@ -94,8 +94,9 @@ class FinishTableStateWorkflowHandler implements TableStateWorkflowHandlerInterf
     }
 
     /**
-     * Проверяем наличие победителей в бд, для текущей сессии стола.
-     * Все банки в бд должны быть completed, для текущей сессии.
+     * Entering in this state is possible only if:
+     * winners have been determined for the current session, and
+     * all banks must be completed before entering this state.
      *
      * @param EnterEvent $event
      *@throws Exception

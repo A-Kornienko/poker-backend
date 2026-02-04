@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controller\Admin\User;
 
 use App\Controller\BaseApiController;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -13,9 +12,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class LoginController extends BaseApiController
 {
-    public function __construct(Security $security, TranslatorInterface $translator, EntityManagerInterface $entityManager)
+    public function __construct(Security $security, TranslatorInterface $translator)
     {
-        parent::__construct($security, $translator, $entityManager);
+        parent::__construct($security, $translator);
     }
 
     #[Route(path: '/admin/login', name: 'admin_login')]
