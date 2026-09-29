@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Handler\CashTables;
 
+use App\Entity\User;
 use App\Exception\ResponseException;
 use App\Handler\AbstractHandler;
 use App\Helper\ErrorCodeHelper;
-use App\Repository\TableSettingRepository;
 use App\Response\TableSettingsResponse;
 use App\Service\TableSettingService;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -19,7 +19,6 @@ class GetCashTablesHandler extends AbstractHandler
     public function __construct(
         protected Security $security,
         protected TranslatorInterface $translator,
-        protected TableSettingRepository $tableSettingRepository,
         protected TableSettingService $tableSettingService
     ) {
         parent::__construct($security, $translator);
@@ -31,16 +30,23 @@ class GetCashTablesHandler extends AbstractHandler
         $limit = $request->query->getInt(static::REQUEST_LIMIT, 20);
         $rule  = $request->query->getString(static::REQUEST_RULE);
 
-        $tableSettingsData = $this->tableSettingService->getCashCollection($page, $limit, $rule);
+        $user = $this->security->getUser();
+        $tableSettingsData = $this->tableSettingService->getCashCollection(
+            $page,
+            $limit,
+            $rule,
+            $user instanceof User ? $user : null
+        );
         $tableSettings     = $tableSettingsData['items'];
         $totalRecords      = $tableSettingsData['total'];
+        $seatedSettingIds  = $tableSettingsData['seatedSettingIds'];
 
         if (!$tableSettings) {
             ResponseException::makeExceptionByCode($this->translator, ErrorCodeHelper::NO_SETTINGS);
         }
 
         return [
-            'items'      => TableSettingsResponse::collection(...$tableSettings),
+            'items'      => TableSettingsResponse::collection($seatedSettingIds, ...$tableSettings),
             'pagination' => [
                 'total' => $totalRecords,
                 'page'  => $page,

@@ -31,8 +31,12 @@ class ApiQueryParameterAuthenticator extends AbstractAuthenticator implements Au
      */
      public function supports(Request $request): ?bool
     {
-        // only support requests to the route 'sse_table_state'
-        return $request->attributes->get('_route') === 'sse_table_state';
+        $allowedRoutes = [
+            'sse_table_state', // only support requests to the route 'sse_table_state'
+            'sse_get_messages', // only support requests to the route 'sse_get_messages'
+        ];
+
+        return in_array($request->attributes->get('_route'), $allowedRoutes);
     }
 
     public function authenticate(Request $request): Passport

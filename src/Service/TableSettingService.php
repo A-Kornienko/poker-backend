@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\TableSetting;
-use App\Entity\Tournament;
+use App\Entity\{TableSetting, Tournament, User};
 use App\Enum\Rules;
 use App\Enum\TableStyle;
 use App\Enum\TableType;
 use App\Enum\TournamentType;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\{TableSettingRepository};
+use App\Repository\{TableSettingRepository, TableUserRepository};
 
 class TableSettingService
 {
     public function __construct(
         protected TableSettingRepository $tableSettingRepository,
+        protected TableUserRepository $tableUserRepository,
         protected EntityManagerInterface $entityManager
     ) {
     }
@@ -24,7 +24,8 @@ class TableSettingService
     public function getCashCollection(
         int $page = 1,
         int $limit = 20,
-        string $rule = ''
+        string $rule = '',
+        ?User $user = null
     ): array {
         $criteria = [
             'type' => TableType::Cash,
@@ -42,8 +43,11 @@ class TableSettingService
         $totalRecords = $this->tableSettingRepository->count($criteria);
 
         return [
-            'items' => $tableSettings,
-            'total' => $totalRecords,
+            'items'            => $tableSettings,
+            'total'            => $totalRecords,
+            'seatedSettingIds' => $user
+                ? array_fill_keys($this->tableUserRepository->getUserSeatedCashSettingIds($user), true)
+                : [],
         ];
     }
 

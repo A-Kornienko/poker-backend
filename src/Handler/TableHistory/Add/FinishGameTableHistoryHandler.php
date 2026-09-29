@@ -2,6 +2,7 @@
 
 namespace App\Handler\TableHistory\Add;
 
+use App\Enum\BetType;
 use App\Enum\TableUserStatus;
 use App\Event\TableHistory\FinishGameEvent;
 use App\Event\TableHistory\PlayerEvent;
@@ -41,7 +42,7 @@ class FinishGameTableHistoryHandler implements AddTableHistoryHandlerInterface
             $players[] = (new PlayerTableHistory())->fromArray([
                 'place' => $player->getPlace(),
                 'login' => $player->getUser()->getLogin(),
-                'cards' => $player->getStatus()->value === TableUserStatus::Active->value ? $player->getCards(true) : [],
+                'cards' => $player->getBetType() !== BetType::Fold ? $player->getCards(true) : [],
                 'stack' => $player->getStack(),
             ]);
         }

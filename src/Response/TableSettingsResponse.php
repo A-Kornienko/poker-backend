@@ -9,7 +9,7 @@ use App\Entity\TableSetting;
 
 class TableSettingsResponse
 {
-    public static function item(TableSetting $tableSetting): array
+    public static function item(TableSetting $tableSetting, bool $isSeated): array
     {
         return [
             'buyIn'        => $tableSetting->getBuyIn(),
@@ -19,6 +19,7 @@ class TableSettingsResponse
             'smallBlind'   => $tableSetting->getSmallBlind(),
             'limitPlayers' => $tableSetting->getCountPlayers(),
             'settingId'    => $tableSetting->getId(),
+            'isSeated'     => $isSeated,
         ];
     }
 
@@ -43,12 +44,12 @@ class TableSettingsResponse
         ];
     }
 
-    public static function collection(TableSetting ...$tableSettings): array
+    public static function collection(array $seatedSettingIds, TableSetting ...$tableSettings): array
     {
         $data = [];
 
         foreach ($tableSettings as $setting) {
-            $data[] = static::item($setting);
+            $data[] = static::item($setting, isset($seatedSettingIds[$setting->getId()]));
         }
 
         return $data;

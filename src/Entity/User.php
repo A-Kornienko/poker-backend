@@ -63,7 +63,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $language = 'en';
 
     #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
-    private ?string $balance = '0.00';
+    private ?string $balance = '100.00';
 
     /**
      * @var Collection<int, TableUser>

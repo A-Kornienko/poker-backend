@@ -27,9 +27,17 @@ class GetTableHistoryListHandler extends AbstractHandler
     {
         $page  = $request->query->getInt(static::REQUEST_PAGE, 1);
         $limit = $request->query->getInt(static::REQUEST_LIMIT, 20);
+        $dateFrom = $this->parseDate($request->query->get('dateFrom'));
+        $dateTo   = $this->parseDate($request->query->get('dateTo'));
 
-        $tableHistoryCollection = $this->tableHistoryRepository->getCollection($table, $page, $limit);
-        $items                  = [];
+        $tableHistoryCollection = $this->tableHistoryRepository->getCollection(
+            $table,
+            $page,
+            $limit,
+            $dateFrom,
+            $dateTo,
+        );
+        $items = [];
 
         /** @var TableHistory $message */
         foreach ($tableHistoryCollection['items'] as $tableHistory) {
@@ -45,8 +53,10 @@ class GetTableHistoryListHandler extends AbstractHandler
                 $bank      = Calculator::add($bank, $winner->getSum());
             }
 
-            $items[$tableHistory->getSession()]['winners'] = $winners;
-            $items[$tableHistory->getSession()]['bank']    = $bank;
+            $items[$tableHistory->getSession()]['winners']   = $winners;
+            $items[$tableHistory->getSession()]['bank']      = $bank;
+            $items[$tableHistory->getSession()]['startedAt'] = $tableHistory->getFormattedCreatedAt()->format(DATE_ATOM);
+            $items[$tableHistory->getSession()]['endedAt']   = $tableHistory->getFormattedUpdatedAt()->format(DATE_ATOM);
         }
 
         return [
@@ -59,4 +69,20 @@ class GetTableHistoryListHandler extends AbstractHandler
             ],
         ];
     }
+
+    private function parseDate(?string $date): ?int
+    {
+        if ($date === null || $date === '') {
+            return null;
+        }
+
+        try {
+            $parsedDate = new \DateTimeImmutable($date);
+        } catch (\Exception $e) {
+            throw new \InvalidArgumentException(sprintf('Invalid date format: %s', $date), 400);
+        }
+
+        return $parsedDate->getTimestamp();
+    }
+
 }

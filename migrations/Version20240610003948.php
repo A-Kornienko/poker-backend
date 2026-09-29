@@ -26,7 +26,7 @@ final class Version20240610003948 extends AbstractMigration
                 login VARCHAR(70) DEFAULT \'0\' NOT NULL, 
                 email VARCHAR(70) NOT NULL, 
                 password VARCHAR(70) NOT NULL, 
-                balance DECIMAL(10, 2) DEFAULT 0 NOT NULL,
+                balance DECIMAL(10, 2) DEFAULT 0.00 NOT NULL,
                 avatar VARCHAR(255) DEFAULT \'\' NOT NULL, 
                 last_login INT DEFAULT 0 NOT NULL, 
                 created_at INT DEFAULT 0 NOT NULL, 

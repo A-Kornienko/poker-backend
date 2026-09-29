@@ -88,6 +88,23 @@ class TableUserRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function getUserSeatedCashSettingIds(User $user): array
+    {
+        $settingIds = $this->createQueryBuilder('tu')
+            ->select('DISTINCT ts.id AS settingId')
+            ->innerJoin('tu.table', 't')
+            ->innerJoin('t.setting', 'ts')
+            ->where('tu.user = :user')
+            ->andWhere('ts.type = :type')
+            ->andWhere('t.isArchived = false')
+            ->setParameter('user', $user)
+            ->setParameter('type', TableType::Cash)
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_map(static fn(array $row): int => (int) $row['settingId'], $settingIds);
+    }
+
     public function getLosersByUpdatedTime(): array
     {
         return $this->createQueryBuilder('tu')

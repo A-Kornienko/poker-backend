@@ -35,7 +35,7 @@ class PlayerResponse
 
     public static function tableStateItem(TableUser $player): array
     {
-        $isShowCards = $player->getTable()->getState() === TableState::Finish->value
+        $isShowCards = $player->getTable()->getState() === TableState::Init->value
             && $player->getTable()->getRound()->value === Round::ShowDown->value
             && $player->getStatus()->value !== TableUserStatus::Pending->value;
 
