@@ -37,6 +37,10 @@
 !var/logs/.gitkeep
 !var/sessions/.gitkeep
 
+# log for table state
+/src/Handler/TableState/our_log.txt
+/src/Handler/TableState/succes_log.txt
+
 # Logs (Symfony4)
 /var/log/*
 !var/log/.gitkeep
