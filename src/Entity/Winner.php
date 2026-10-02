@@ -35,7 +35,7 @@ class Winner
     private Bank $bank;
 
     #[ORM\Column(name: 'sum', type: Types::DECIMAL, precision: 10, scale: 2)]
-    private float $sum;
+    private string $sum = '0.00';
 
     #[ORM\Column(name: "session", type: Types::STRING, nullable: true)]
     private ?string $session = null;
@@ -83,12 +83,12 @@ class Winner
 
     public function getSum(): float
     {
-        return $this->sum;
+        return (float) $this->sum;
     }
 
     public function setSum(float $sum): static
     {
-        $this->sum = $sum;
+        $this->sum = (string) $sum;
 
         return $this;
     }

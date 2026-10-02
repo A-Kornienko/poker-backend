@@ -37,16 +37,16 @@ class Tournament
     private ?int $dateStart = 0;
 
     #[ORM\Column(name: "small_blind", type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0.1])]
-    private ?float $smallBlind = 0.1;
+    private ?string $smallBlind = '0.10';
 
     #[ORM\Column(name: "big_blind", type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0.2])]
-    private ?float $bigBlind = 0.2;
+    private ?string $bigBlind = '0.20';
 
     #[ORM\Column(name: "last_blind_update", type: Types::INTEGER, options: ["default" => 0])]
     private ?int $lastBlindUpdate = 0;
 
     #[ORM\Column(name: "balance", type: Types::DECIMAL, precision: 10, scale:2, options: ["default" => 0])]
-    private float $balance = 0;
+    private string $balance = '0.00';
 
     #[ORM\Column(name: "status", type: Types::STRING, enumType: TournamentStatus::class, options: ["default" => TournamentStatus::Pending])]
     private TournamentStatus $status = TournamentStatus::Pending;
@@ -76,6 +76,9 @@ class Tournament
     #[ORM\OneToMany(targetEntity: Table::class, mappedBy: 'tournament', cascade: ['persist'], orphanRemoval: true)]
     private Collection $tables;
 
+    #[ORM\OneToMany(targetEntity: ReformTableQueue::class, mappedBy: 'tournament', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $reformTableQueue;
+
     #[ORM\OneToMany(targetEntity: TournamentPrize::class, mappedBy: 'tournament', cascade: ['persist'], orphanRemoval: true)]
     private Collection $prizes;
 
@@ -88,10 +91,11 @@ class Tournament
 
     public function __construct()
     {
-        $this->tournamentUsers = new ArrayCollection();
-        $this->tables          = new ArrayCollection();
-        $this->prizes          = new ArrayCollection();
-        $this->notifications   = new ArrayCollection();
+        $this->tournamentUsers  = new ArrayCollection();
+        $this->tables           = new ArrayCollection();
+        $this->reformTableQueue = new ArrayCollection();
+        $this->prizes           = new ArrayCollection();
+        $this->notifications    = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -192,12 +196,12 @@ class Tournament
 
     public function getBalance(): float
     {
-        return $this->balance;
+        return (float) $this->balance;
     }
 
     public function setBalance(float $balance): static
     {
-        $this->balance = $balance;
+        $this->balance = (string) $balance;
 
         return $this;
     }
@@ -370,24 +374,24 @@ class Tournament
 
     public function getSmallBlind(): ?float
     {
-        return $this->smallBlind;
+        return $this->smallBlind !== null ? (float) $this->smallBlind : null;
     }
 
     public function setSmallBlind(?float $smallBlind): static
     {
-        $this->smallBlind = $smallBlind;
+        $this->smallBlind = $smallBlind !== null ? (string) $smallBlind : null;
 
         return $this;
     }
 
     public function getBigBlind(): ?float
     {
-        return $this->bigBlind;
+        return $this->bigBlind !== null ? (float) $this->bigBlind : null;
     }
 
     public function setBigBlind(?float $bigBlind): static
     {
-        $this->bigBlind = $bigBlind;
+        $this->bigBlind = $bigBlind !== null ? (string) $bigBlind : null;
 
         return $this;
     }

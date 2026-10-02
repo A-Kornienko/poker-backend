@@ -94,7 +94,7 @@ class DetectWinnerHandler
                 $bankPlayers[] = $indexedPlayersByUserId[$user->getId()];
             }
 
-            if ($bankPlayers > 1) {
+            if (count($bankPlayers) > 1) {
                 // Сортировка игроков по комбинации.
                 usort($bankPlayers, function ($playerA, $playerB) {
                     $combinationA = $playerA->getCombination();
@@ -134,8 +134,19 @@ class DetectWinnerHandler
                 }
             }
 
-            $winSum = Calculator::subtract($bank->getSum(), count($bankWinners));
-            foreach ($bankWinners as $bankWinner) {
+            $winnerCount = count($bankWinners);
+            if ($winnerCount === 0) {
+                $bank->setStatus(BankStatus::Completed);
+                $this->entityManager->persist($bank);
+                continue;
+            }
+
+            $bankSumInCents = (int) round($bank->getSum() * 100);
+            $baseShareInCents = intdiv($bankSumInCents, $winnerCount);
+            $remainingCents = $bankSumInCents % $winnerCount;
+
+            foreach (array_values($bankWinners) as $index => $bankWinner) {
+                $winSum = ($baseShareInCents + ($index < $remainingCents ? 1 : 0)) / 100;
                 $winners[] = (new Winner())->setTable($bank->getTable())
                     ->setSession($bank->getTable()->getSession())
                     ->setUser($bankWinner->getUser())

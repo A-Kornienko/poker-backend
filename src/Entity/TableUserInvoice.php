@@ -23,7 +23,7 @@ class TableUserInvoice
     private ?int $id = null;
 
     #[ORM\Column(name: "sum", type: Types::DECIMAL, precision: 10, scale:2, options: ["default" => 0])]
-    private float $sum = 0;
+    private string $sum = '0.00';
 
     #[ORM\Column(name: "status", type: Types::STRING, enumType: TableUserInvoiceStatus::class, length: 255, options: ["default" => TableUserInvoiceStatus::Pending])]
     private TableUserInvoiceStatus $status = TableUserInvoiceStatus::Pending;
@@ -43,12 +43,12 @@ class TableUserInvoice
 
     public function getSum(): ?float
     {
-        return $this->sum;
+        return (float) $this->sum;
     }
 
     public function setSum(float $sum): static
     {
-        $this->sum = $sum;
+        $this->sum = (string) $sum;
 
         return $this;
     }

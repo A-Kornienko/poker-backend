@@ -36,10 +36,10 @@ class TournamentSetting
 
     // Sum of rebuy or entry to the tournament.
     #[ORM\Column(name: "entry_sum", type: Types::DECIMAL, precision: 10, scale:2, options: ["default" => 0])]
-    private ?float $entrySum = 0;
+    private ?string $entrySum = '0.00';
 
     #[ORM\Column(name: "entry_chips", type: Types::DECIMAL, precision: 10, scale:2, options: ["default" => 0])]
-    private ?float $entryChips = 0;
+    private ?string $entryChips = '0.00';
 
     // count of players to start the tournament.
     #[ORM\Column(name: "start_count_players", type: Types::INTEGER, options: ["default" => 0])]
@@ -142,12 +142,12 @@ class TournamentSetting
 
     public function getEntrySum(): ?float
     {
-        return $this->entrySum;
+        return $this->entrySum !== null ? (float) $this->entrySum : null;
     }
 
     public function setEntrySum(?float $entrySum): static
     {
-        $this->entrySum = $entrySum;
+        $this->entrySum = $entrySum !== null ? (string) $entrySum : null;
 
         return $this;
     }

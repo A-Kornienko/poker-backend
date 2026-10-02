@@ -46,7 +46,7 @@ class CallHandler extends AbstractBetStrategyHandler implements BetHandlerInterf
                 $player->getTable()->getRound(),
                 $player->getPlace(),
                 RoundActionType::Bet,
-                BetType::Call,
+                $player->getBetType(),
                 $diff
             ),
             PlayerActionEvent::NAME

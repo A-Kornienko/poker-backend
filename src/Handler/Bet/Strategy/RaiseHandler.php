@@ -61,7 +61,7 @@ class RaiseHandler extends AbstractBetStrategyHandler implements BetHandlerInter
                 $table->getRound(),
                 $this->player->getPlace(),
                 RoundActionType::Bet,
-                BetType::Raise,
+                $this->player->getBetType(),
                 $amount
             ),
             PlayerActionEvent::NAME

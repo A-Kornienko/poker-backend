@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Handler\TableHistory;
 
 use App\Entity\Table;
+use App\Entity\TableHistory;
 use App\Handler\AbstractHandler;
-use App\Helper\Calculator;
 use App\Repository\TableHistoryRepository;
-use App\ValueObject\Card;
+use App\Response\TableHistoryResponse;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -37,30 +37,14 @@ class GetTableHistoryListHandler extends AbstractHandler
             $dateFrom,
             $dateTo,
         );
-        $items = [];
-
-        /** @var TableHistory $message */
-        foreach ($tableHistoryCollection['items'] as $tableHistory) {
-            $bank    = 0;
-            $winners = [];
-
-            foreach ($tableHistory->getWinners() as $winner) {
-                if ($winner->getLogin() === $this->security->getUser()?->getLogin()) {
-                    $items[$tableHistory->getSession()]['cards'] = array_map(fn(Card $card) => $card->toArray(), $winner->getHandCards()) ?? [];
-                }
-
-                $winners[] = $winner->getLogin();
-                $bank      = Calculator::add($bank, $winner->getSum());
-            }
-
-            $items[$tableHistory->getSession()]['winners']   = $winners;
-            $items[$tableHistory->getSession()]['bank']      = $bank;
-            $items[$tableHistory->getSession()]['startedAt'] = $tableHistory->getFormattedCreatedAt()->format(DATE_ATOM);
-            $items[$tableHistory->getSession()]['endedAt']   = $tableHistory->getFormattedUpdatedAt()->format(DATE_ATOM);
-        }
+        $currentLogin = $this->security->getUser()?->getLogin();
+        $items = array_map(
+            static fn(TableHistory $tableHistory): array => TableHistoryResponse::list($tableHistory, $currentLogin),
+            $tableHistoryCollection['items']
+        );
 
         return [
-            'items'      => $items ?? [],
+            'items'      => $items,
             'pagination' => [
                 'total' => $tableHistoryCollection['total'],
                 'page'  => $page,

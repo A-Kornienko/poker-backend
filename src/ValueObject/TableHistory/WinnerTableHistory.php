@@ -13,6 +13,10 @@ class WinnerTableHistory
 
     protected ?Combination $combination = null;
 
+    protected int $seat = 0;
+
+    protected ?string $handRank = null;
+
     protected array $handCards = [];
 
     protected float $sum;
@@ -20,6 +24,8 @@ class WinnerTableHistory
     protected array $mapping = [
         'login'       => 'setLogin',
         'combination' => 'setCombination',
+        'seat'        => 'setSeat',
+        'handRank'    => 'setHandRank',
         'handCards'   => 'setHandCards',
         'sum'         => 'setSum',
     ];
@@ -45,7 +51,9 @@ class WinnerTableHistory
 
         return [
             'login'       => $this->login,
+            'seat'        => $this->seat,
             'combination' => $this->combination?->toArray(),
+            'handRank'    => $this->handRank,
             'handCards'   => $handCards,
             'sum'         => $this->sum,
         ];
@@ -78,6 +86,30 @@ class WinnerTableHistory
     public function getCombination()
     {
         return $this->combination;
+    }
+
+    public function getSeat(): int
+    {
+        return $this->seat;
+    }
+
+    public function setSeat(int $seat): static
+    {
+        $this->seat = $seat;
+
+        return $this;
+    }
+
+    public function getHandRank(): ?string
+    {
+        return $this->handRank;
+    }
+
+    public function setHandRank(?string $handRank): static
+    {
+        $this->handRank = $handRank;
+
+        return $this;
     }
 
     /**

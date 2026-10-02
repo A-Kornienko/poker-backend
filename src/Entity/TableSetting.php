@@ -36,14 +36,14 @@ class TableSetting
     #[ORM\Column(name: "type", type: Types::STRING, length: 20, enumType: TableType::class, options: ["default" => TableType::Cash])]
     private ?TableType $type = null;
 
-    #[ORM\Column(name: "buy_in", type: Types::DECIMAL, options: ["default" => 0])]
-    private ?float $buyIn = 0;
+    #[ORM\Column(name: "buy_in", type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0])]
+    private ?string $buyIn = '0.00';
 
     #[ORM\Column(name: "small_blind", type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0.1])]
-    private ?float $smallBlind = 0.1;
+    private ?string $smallBlind = '0.10';
 
     #[ORM\Column(name: "big_blind", type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0.2])]
-    private ?float $bigBlind = 0.2;
+    private ?string $bigBlind = '0.20';
 
     #[ORM\Column(name: "style", type: Types::STRING, length: 20, options: ["default" => null])]
     private ?string $style = null;
@@ -81,12 +81,12 @@ class TableSetting
 
     public function getBuyIn(): ?float
     {
-        return $this->buyIn;
+        return $this->buyIn !== null ? (float) $this->buyIn : null;
     }
 
     public function setBuyIn(?float $buyIn): static
     {
-        $this->buyIn = $buyIn;
+        $this->buyIn = $buyIn !== null ? (string) $buyIn : null;
 
         return $this;
     }
@@ -192,24 +192,24 @@ class TableSetting
 
     public function getSmallBlind(): ?float
     {
-        return $this->smallBlind;
+        return $this->smallBlind !== null ? (float) $this->smallBlind : null;
     }
 
     public function setSmallBlind(?float $smallBlind): static
     {
-        $this->smallBlind = $smallBlind;
+        $this->smallBlind = $smallBlind !== null ? (string) $smallBlind : null;
 
         return $this;
     }
 
     public function getBigBlind(): ?float
     {
-        return $this->bigBlind;
+        return $this->bigBlind !== null ? (float) $this->bigBlind : null;
     }
 
     public function setBigBlind(?float $bigBlind): static
     {
-        $this->bigBlind = $bigBlind;
+        $this->bigBlind = $bigBlind !== null ? (string) $bigBlind : null;
 
         return $this;
     }

@@ -31,10 +31,10 @@ class Bank
     private Collection $users;
 
     #[ORM\Column(name: 'bet', type: Types::DECIMAL, precision: 10, scale: 2, options: ['default' => 0])]
-    private ?float $bet = null;
+    private ?string $bet = '0.00';
 
     #[ORM\Column(name: 'sum', type: Types::DECIMAL, precision: 10, scale: 2, options: ['default' => 0])]
-    private ?float $sum = null;
+    private ?string $sum = '0.00';
 
     #[ORM\Column(name: 'status', enumType: BankStatus::class, type: Types::STRING, options: ['default' => BankStatus::InProgress->value])]
     private ?BankStatus $status = null;
@@ -80,24 +80,24 @@ class Bank
 
     public function getBet(): ?float
     {
-        return $this->bet;
+        return $this->bet !== null ? (float) $this->bet : null;
     }
 
     public function setBet(?float $bet = 0): static
     {
-        $this->bet = $bet;
+        $this->bet = $bet !== null ? (string) $bet : null;
 
         return $this;
     }
 
     public function getSum(): ?float
     {
-        return $this->sum;
+        return $this->sum !== null ? (float) $this->sum : null;
     }
 
     public function setSum(?float $sum = 0): static
     {
-        $this->sum = $sum;
+        $this->sum = $sum !== null ? (string) $sum : null;
 
         return $this;
     }

@@ -25,7 +25,7 @@ class TournamentPrize
     private ?User $winner = null;
 
     #[ORM\Column(name: "sum", type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0])]
-    private ?float $sum = 0;
+    private ?string $sum = '0.00';
 
     public function getId(): ?int
     {
@@ -65,12 +65,12 @@ class TournamentPrize
 
     public function getSum(): ?float
     {
-        return $this->sum;
+        return $this->sum !== null ? (float) $this->sum : null;
     }
 
     public function setSum(?float $sum): static
     {
-        $this->sum = $sum;
+        $this->sum = $sum !== null ? (string) $sum : null;
 
         return $this;
     }

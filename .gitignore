@@ -40,6 +40,7 @@
 # log for table state
 /src/Handler/TableState/our_log.txt
 /src/Handler/TableState/succes_log.txt
+/src/Handler/TableState/error_log.txt
 
 # Logs (Symfony4)
 /var/log/*

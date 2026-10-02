@@ -20,6 +20,18 @@ class TableHistoryRepository extends ServiceEntityRepository
         parent::__construct($registry, TableHistory::class);
     }
 
+    public function getNextHandNumber(Table $table): int
+    {
+        $lastHandNumber = $this->createQueryBuilder('tableHistory')
+            ->select('MAX(tableHistory.handNumber)')
+            ->andWhere('tableHistory.table = :table')
+            ->setParameter('table', $table)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (int) $lastHandNumber + 1;
+    }
+
     public function getCollection(
         Table $table,
         int $page = 1,
@@ -34,11 +46,13 @@ class TableHistoryRepository extends ServiceEntityRepository
         $queryBuilder = $this->createQueryBuilder('tableHistory')
             ->andWhere('tableHistory.table = :table')
             ->setParameter('table', $table)
-            ->orderBy('tableHistory.id', 'DESC')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit);
+            ->orderBy('tableHistory.id', 'DESC');
 
         $this->addDateFilters($queryBuilder, $dateFrom, $dateTo);
+        $this->excludeUnfinishedCurrentSession($queryBuilder, $table);
+        $queryBuilder
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
 
         $items = $queryBuilder->getQuery()->getResult();
 
@@ -48,11 +62,25 @@ class TableHistoryRepository extends ServiceEntityRepository
             ->setParameter('table', $table);
 
         $this->addDateFilters($countQueryBuilder, $dateFrom, $dateTo);
+        $this->excludeUnfinishedCurrentSession($countQueryBuilder, $table);
 
         return [
-            'items' => array_filter($items, fn(TableHistory $tableHistory) => $tableHistory->getSession() !== $table->getSession()),
+            'items' => array_values($items),
             'total' => (int) $countQueryBuilder->getQuery()->getSingleScalarResult(),
         ];
+    }
+
+    private function excludeUnfinishedCurrentSession($queryBuilder, Table $table): void
+    {
+        $currentSession = $table->getSession();
+        if ($currentSession === null) {
+            return;
+        }
+
+        $queryBuilder
+            ->andWhere('(tableHistory.session != :currentSession OR tableHistory.status = :finishedStatus)')
+            ->setParameter('currentSession', $currentSession)
+            ->setParameter('finishedStatus', 'finished');
     }
 
     private function addDateFilters($queryBuilder, ?int $dateFrom, ?int $dateTo): void

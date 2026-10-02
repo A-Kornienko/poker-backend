@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Handler\TableHistory\Add;
 
 use App\Entity\TableHistory;
+use App\Entity\TableHistoryAction;
 use App\Enum\Round;
 use App\Event\TableHistory\PlayerActionEvent;
 use App\Repository\TableHistoryRepository;
-use App\ValueObject\TableHistory\RoundActionTableHistory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
@@ -30,20 +30,20 @@ class PlayerActionTableHistoryHandler implements AddTableHistoryHandlerInterface
         /** @var PlayerActionEvent $event */
         /** @var TableHistory $tableHistory */
         $tableHistory = $this->tableHistoryRepository->findOneBy(['session' => $event->getSession()]);
-        $roundAction  = (new RoundActionTableHistory())
-            ->setLogin($event->getLogin())
-            ->setPlace($event->getPlace())
-            ->setType($event->getActionType())
-            ->setBetType($event->getBetType())
-            ->setAmount($event->getAmount());
 
-        match($event->getRound()) {
-            Round::PreFlop => $tableHistory->addPreflop($roundAction),
-            Round::Flop    => $tableHistory->addFlop($roundAction),
-            Round::Turn    => $tableHistory->addTurn($roundAction),
-            Round::River   => $tableHistory->addRiver($roundAction),
-            default        => true
-        };
+        if (!$tableHistory) {
+            return;
+        }
+
+        $tableHistory->addAction((new TableHistoryAction())
+            ->setTableHistory($tableHistory)
+            ->setPlayer($event->getLogin())
+            ->setSeat((int) $event->getPlace())
+            ->setRound($event->getRound())
+            ->setActionType($event->getActionType())
+            ->setBetType($event->getBetType())
+            ->setAmount($event->getAmount())
+            ->setSequenceNumber($tableHistory->getActions()->count() + 1));
 
         $this->entityManager->persist($tableHistory);
         $this->entityManager->flush();

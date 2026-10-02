@@ -25,7 +25,7 @@ class GetTableHistoryHandler
         ksort($players);
 
         foreach ($players as &$player) {
-            $player->setIsMyPlayer($user->getLogin() === $player->getLogin());
+            $player->setIsMyPlayer($user?->getLogin() === $player->getLogin());
             $player->setPosition(
                 $this->playerService->getPosition(
                     $player->getPlace(),
@@ -35,8 +35,6 @@ class GetTableHistoryHandler
             );
         }
 
-        $tableHistory->setPlayers($players);
-
-        return TableHistoryResponse::item($tableHistory);
+        return TableHistoryResponse::item($tableHistory, array_values($players));
     }
 }

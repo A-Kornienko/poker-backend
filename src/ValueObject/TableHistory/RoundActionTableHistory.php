@@ -7,12 +7,6 @@ namespace App\ValueObject\TableHistory;
 use App\Enum\BetType;
 use App\Enum\RoundActionType;
 
-//enum RoundActionType: string
-//{
-//    case Bet = 'bet';
-//    case TimeBank = 'timeBank';
-//}
-
 class RoundActionTableHistory
 {
     protected string $login = '';
@@ -85,7 +79,7 @@ class RoundActionTableHistory
         return [
             'place'   => $this->place,
             'type'    => $this->type->value,
-            'betType' => $this->betType->value,
+            'betType' => $this->betType?->value,
             'amount'  => $this->amount,
         ];
     }
@@ -107,7 +101,7 @@ class RoundActionTableHistory
         return $this->betType;
     }
 
-    public function setBetType(BetType|string $betType)
+    public function setBetType(BetType|string|null $betType): static
     {
         $this->betType = is_string($betType) ? BetType::tryFrom($betType) : $betType;
 

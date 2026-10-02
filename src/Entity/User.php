@@ -89,7 +89,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: TournamentUser::class, mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
     private Collection $tournamentUsers;
 
-    #[ORM\OneToMany(targetEntity: TournamentPrize::class, mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: TournamentPrize::class, mappedBy: 'winner', cascade: ['persist'], orphanRemoval: true)]
     private Collection $prizes;
 
     #[ORM\OneToMany(targetEntity: Winner::class, mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]

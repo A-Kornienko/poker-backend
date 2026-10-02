@@ -49,16 +49,16 @@ class TableUser
     private int $place = 0;
 
     #[ORM\Column(name: "stack", type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0])]
-    private float $stack = 20;
+    private string $stack = '20.00';
 
     #[ORM\Column(name: "status", type: Types::STRING, enumType: TableUserStatus::class, length: 255, options: ["default" => TableUserStatus::Pending->value])]
     private TableUserStatus $status = TableUserStatus::Pending;
 
     #[ORM\Column(name: "bet", type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0])]
-    private float $bet = 0;
+    private string $bet = '0.00';
 
     #[ORM\Column(name: "bet_sum", type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0])]
-    private float $betSum = 0;
+    private string $betSum = '0.00';
 
     #[ORM\Column(name: "bet_type", type: Types::STRING, enumType: BetType::class, length: 255, nullable: true)]
     private ?BetType $betType = null;
@@ -148,12 +148,12 @@ class TableUser
 
     public function getStack(): float
     {
-        return $this->stack;
+        return (float) $this->stack;
     }
 
     public function setStack(float $stack): static
     {
-        $this->stack = $stack;
+        $this->stack = (string) $stack;
 
         return $this;
     }
@@ -177,12 +177,12 @@ class TableUser
 
     public function getBet(): float
     {
-        return $this->bet;
+        return (float) $this->bet;
     }
 
     public function setBet(float $bet): static
     {
-        $this->bet = $bet;
+        $this->bet = (string) $bet;
 
         return $this;
     }
@@ -306,12 +306,12 @@ class TableUser
 
     public function getBetSum(): float
     {
-        return $this->betSum;
+        return (float) $this->betSum;
     }
 
     public function setBetSum(float $betSum): static
     {
-        $this->betSum = $betSum;
+        $this->betSum = (string) $betSum;
 
         return $this;
     }

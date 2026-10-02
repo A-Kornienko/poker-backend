@@ -44,9 +44,19 @@ class WinnerTableHistoryHandler implements AddTableHistoryHandlerInterface
         }
 
         foreach ($winners as $winner) {
+            $combination = $winner->getTableUser()->getCombination();
+            $historyPlayer = $tableHistory->getPlayerRecord(
+                $winner->getUser()->getLogin(),
+                (int) $winner->getTableUser()->getPlace()
+            );
+
+            $historyPlayer?->setCards($winner->getTableUser()->getCards(true));
+
             $tableHistory->addWinner((new WinnerTableHistory())->fromArray([
                 'login'       => $winner->getUser()->getLogin(),
-                'combination' => $winner->getTableUser()->getCombination(),
+                'combination' => $combination?->toArray(),
+                'seat'        => (int) $winner->getTableUser()->getPlace(),
+                'handRank'    => $combination?->getName(),
                 'handCards'   => $winner->getTableUser()->getCards(true),
                 'sum'         => $winner->getSum(),
             ]));

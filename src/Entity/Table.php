@@ -31,7 +31,7 @@ class Table
     private ?string $name = null;
 
     #[ORM\Column(name: "max_bet", type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0])]
-    private ?float $maxBet = 0;
+    private ?string $maxBet = '0.00';
 
     #[ORM\Column(name: "session", type: Types::STRING, nullable: true)]
     private ?string $session = null;
@@ -76,10 +76,10 @@ class Table
     private ?int $reconnectTime = 120;
 
     #[ORM\Column(name: "small_blind", type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0.1])]
-    private ?float $smallBlind = 0.1;
+    private ?string $smallBlind = '0.10';
 
     #[ORM\Column(name: "big_blind", type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0.2])]
-    private ?float $bigBlind = 0.2;
+    private ?string $bigBlind = '0.20';
 
     /**
      * @var Collection<int, TableUser>
@@ -115,6 +115,9 @@ class Table
     #[ORM\OneToMany(targetEntity: TableSpectator::class, mappedBy: 'table', cascade: ['persist'], orphanRemoval: true)]
     private Collection $spectators;
 
+    #[ORM\OneToMany(targetEntity: ReformTableQueue::class, mappedBy: 'table', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $reformTableQueue;
+
     #[ORM\OneToMany(targetEntity: Bank::class, mappedBy: 'table', cascade: ['persist'], orphanRemoval: true)]
     private Collection $banks;
 
@@ -133,6 +136,7 @@ class Table
         $this->tableHistory      = new ArrayCollection();
         $this->tournamentUsers   = new ArrayCollection();
         $this->spectators        = new ArrayCollection();
+        $this->reformTableQueue  = new ArrayCollection();
         $this->banks             = new ArrayCollection();
         $this->winners           = new ArrayCollection();
     }
@@ -163,12 +167,12 @@ class Table
 
     public function getMaxBet(): ?float
     {
-        return $this->maxBet;
+        return $this->maxBet !== null ? (float) $this->maxBet : null;
     }
 
     public function setMaxBet(?float $maxBet): static
     {
-        $this->maxBet = $maxBet;
+        $this->maxBet = $maxBet !== null ? (string) $maxBet : null;
 
         return $this;
     }
@@ -503,24 +507,24 @@ class Table
 
     public function getSmallBlind(): ?float
     {
-        return $this->smallBlind;
+        return $this->smallBlind !== null ? (float) $this->smallBlind : null;
     }
 
     public function setSmallBlind(?float $smallBlind): static
     {
-        $this->smallBlind = $smallBlind;
+        $this->smallBlind = $smallBlind !== null ? (string) $smallBlind : null;
 
         return $this;
     }
 
     public function getBigBlind(): ?float
     {
-        return $this->bigBlind;
+        return $this->bigBlind !== null ? (float) $this->bigBlind : null;
     }
 
     public function setBigBlind(?float $bigBlind): static
     {
-        $this->bigBlind = $bigBlind;
+        $this->bigBlind = $bigBlind !== null ? (string) $bigBlind : null;
 
         return $this;
     }

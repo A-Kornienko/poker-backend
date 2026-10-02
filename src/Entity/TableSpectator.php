@@ -18,7 +18,7 @@ class TableSpectator
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'tableSpectators')]
+    #[ORM\ManyToOne(inversedBy: 'spectators')]
     #[ORM\JoinColumn(name: 'table_id', referencedColumnName: 'id')]
     private Table $table;
 

@@ -27,7 +27,7 @@ class ReformTableQueue
     #[ORM\JoinColumn(name: 'table_id', referencedColumnName: 'id', nullable: false)]
     private Table $table;
 
-    #[ORM\ManyToOne(targetEntity: Tournament::class, inversedBy: 'reform_table_queue')]
+    #[ORM\ManyToOne(targetEntity: Tournament::class, inversedBy: 'reformTableQueue')]
     #[ORM\JoinColumn(name: 'tournament_id', referencedColumnName: 'id', nullable: false)]
     private Tournament $tournament;
 
